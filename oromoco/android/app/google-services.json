@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "478955247725",
+    "firebase_url": "https://oromoco-70284.firebaseio.com",
+    "project_id": "oromoco-70284",
+    "storage_bucket": "oromoco-70284.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:478955247725:android:5ecef3e07fe96a59180764",
+        "android_client_info": {
+          "package_name": "org.projectcocoon.oromoco"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "478955247725-ahssscdehocdemfdh1cn7u49cd9p89pu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkdOqAoufgdKoiYBxacxUIfa8eXAXySpc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "478955247725-ahssscdehocdemfdh1cn7u49cd9p89pu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
