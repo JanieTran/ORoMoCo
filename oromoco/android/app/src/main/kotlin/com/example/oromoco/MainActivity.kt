@@ -1,4 +1,4 @@
-package com.example.oromoco
+package org.projectcocoon.oromoco
 
 import io.flutter.embedding.android.FlutterActivity
 
