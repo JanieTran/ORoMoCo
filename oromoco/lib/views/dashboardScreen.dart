@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'console.dart';
@@ -22,40 +23,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Container(
-              child: Icon(
-                Icons.menu,
-                color: Theme.of(context).primaryColor,
-              ),
-            ),
-            Expanded(
-              child: Container(
-                child: Text(
-                  "OROMOCO",
-                  style: Theme.of(context).textTheme.headline5.copyWith(color: Theme.of(context).accentColor),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            GestureDetector(
-              onTap: () {
-                Fluttertoast.showToast(msg: "pressed");
-              },
-              child: Container(
-                child: Icon(
-                  Icons.menu,
-                  color: Theme.of(context).accentColor
-                ),
-              ),
-            )
-          ],
+    final ThemeData theme = Theme.of(context);
+
+    return Scaffold (
+      appBar: AppBar (
+        centerTitle: true,
+        title: Text(
+          "OROMOCO",
+          style: theme.textTheme.headline5.copyWith(color: theme.accentColor),
         ),
+        actions: <Widget>[
+          IconButton (
+          icon: Icon(Icons.menu, color: Theme.of(context).accentColor),
+          onPressed: () {
+            Fluttertoast.showToast(msg: 'Menu pressed');
+          })
+        ],
       ),
       body: Container(
         padding: EdgeInsets.symmetric(
@@ -102,6 +85,8 @@ class FeatureTile extends StatefulWidget {
 class _FeatureTileState extends State<FeatureTile> {
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
     return GestureDetector(
       onTap: (){
         print(widget.name);
@@ -110,15 +95,22 @@ class _FeatureTileState extends State<FeatureTile> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(25),
-          color: Theme.of(context).accentColor
+          color: theme.accentColor
         ),
         height: 50,
         padding: EdgeInsets.symmetric(vertical: 10),
-        child: Text(
-          widget.name,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headline5,
-        ),
+        child: Row(
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.fromLTRB(20, 0, 10, 0),
+              child: Icon(Icons.videogame_asset, color: theme.primaryColor),
+            ),
+            Text(
+              widget.name,
+              style: theme.textTheme.headline5,
+            ),
+          ],
+        )
       ),
     );
   }
