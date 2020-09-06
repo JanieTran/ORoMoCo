@@ -11,7 +11,7 @@ class _AuthenticateState extends State<Authenticate> {
 
   bool showSignIn = true;
 
-  void toggleView(){
+  void toggleView() {
     setState(() {
       showSignIn = !showSignIn;
     });
@@ -19,9 +19,9 @@ class _AuthenticateState extends State<Authenticate> {
 
   @override
   Widget build(BuildContext context) {
-    if(showSignIn){
+    if (showSignIn) {
       return SignIn(toggleView);
-    } else{
+    } else {
       return SignUp(toggleView);
     }
   }

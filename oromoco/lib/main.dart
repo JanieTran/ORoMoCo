@@ -40,17 +40,3 @@ class _OROMOCOState extends State<OROMOCO> {
     );
   }
 }
-
-class BlankScreen extends StatefulWidget {
-  @override
-  _BlankScreenState createState() => _BlankScreenState();
-}
-
-class _BlankScreenState extends State<BlankScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      
-    );
-  }
-}

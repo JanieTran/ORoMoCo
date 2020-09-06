@@ -35,35 +35,35 @@ class ORoMoCoTheme {
     errorColor: Colors.red,
     fontFamily: 'Livvic',
     textTheme: ThemeData.light().textTheme.copyWith(
-          headline5: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-            color: AppColors.blue,
-          ),
-          headline6: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-            color: AppColors.blue,
-          ),
-          subtitle1: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.normal,
-            color: AppColors.blue,
-          ),
-          subtitle2: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.normal,
-            color: AppColors.blue,
-          ),
-          bodyText1: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.normal,
-            color: AppColors.blue,
-          ),
-          caption: TextStyle(
-            fontSize: 16,
-            color: AppColors.blue,
-          ),
-        ),
+      headline5: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 20,
+        color: AppColors.blue,
+      ),
+      headline6: TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.bold,
+        color: AppColors.blue,
+      ),
+      subtitle1: TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.normal,
+        color: AppColors.blue,
+      ),
+      subtitle2: TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.normal,
+        color: AppColors.blue,
+      ),
+      bodyText1: TextStyle(
+        fontSize: 15,
+        fontWeight: FontWeight.normal,
+        color: AppColors.blue,
+      ),
+      caption: TextStyle(
+        fontSize: 16,
+        color: AppColors.blue,
+      ),
+    ),
   );
 }
