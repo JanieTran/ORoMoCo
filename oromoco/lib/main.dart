@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:oromoco/helper/authenticate.dart';
+import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/helper/helperFunctions.dart';
 import 'package:oromoco/utils/theme/theme.dart';
 import 'package:oromoco/views/dashboardScreen.dart';
@@ -23,7 +24,11 @@ class _OROMOCOState extends State<OROMOCO> {
   }
 
   getLoggedInState() async {
-    await HelperFunctions.getUserLoggedInSharedPreferences().then((value){
+    await HelperFunctions.getUserLoggedInSharedPreferences().then((value) async {
+      if(value == true) {
+        Constants.username = await HelperFunctions.getUserNameSharedPreferences();
+        Constants.email = await HelperFunctions.getUserEmailSharedPreferences();
+      }
       setState(() {
         userIsLoggedIn = value;
       });
