@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:oromoco/bluetooth/MainPage.dart';
+import 'package:oromoco/helper/authenticate.dart';
 import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/helper/helperFunctions.dart';
+import 'package:oromoco/services/auth.dart';
+import 'package:oromoco/views/controlPanelScreen.dart';
 
 class DashboardScreen extends StatefulWidget {
   @override
@@ -9,17 +12,44 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  List<FeatureTile> featureList = [];
+  List featureList = [];
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    featureList.add(new FeatureTile("Vulcan's Control Panel", key: UniqueKey()));
+  Widget featureTile (String name){
+    return GestureDetector(
+      onTap: (){
+        onFeatureTap(name);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Theme.of(context).accentColor
+        ),
+        height: 50,
+        padding: EdgeInsets.symmetric(vertical: 10),
+        child: Text(
+          name,
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headline6
+        ),
+      ),
+    );
+  }
+
+  void onFeatureTap(name) async {
+    if(name == "Vulcan's Control Panel"){
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                ControlPanelScreen()));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    featureList.clear();
+    featureList.add(featureTile("Vulcan's Control Panel"));
+
     return Scaffold(
       drawer: Drawer(
         child: ListView(
@@ -53,6 +83,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               onTap: () {
                 Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));
               },
             ),
             ListTile(
@@ -61,7 +92,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 style: Theme.of(context).textTheme.headline6
               ),
               onTap: () {
-                Navigator.pop(context);
+                HelperFunctions.resetUserLoggedInSharedPreferencs();
+                AuthMethod().signOut();
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Authenticate()));
               },
             ),
           ],
@@ -97,60 +130,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
         padding: EdgeInsets.symmetric(
           vertical: 20
         ),
-        child: FeatureList(featureList)
-      ),
-    );
-  }
-}
-
-class FeatureList extends StatelessWidget {
-  List<FeatureTile> featureList = [];
-  FeatureList(this.featureList);
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: featureList.length,
-          itemBuilder: (context, index){
-            return Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: 26,
-                vertical: 5
-               ),
-              child: featureList[index]
-            );
-          }
-        ),
-    );
-  }
-}
-
-class FeatureTile extends StatefulWidget {
-  final String name;
-  FeatureTile(this.name, {Key key}):super(key: key);
-  @override
-  _FeatureTileState createState() => _FeatureTileState();
-}
-
-class _FeatureTileState extends State<FeatureTile> {
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: (){
-        print(widget.name);
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Theme.of(context).accentColor
-        ),
-        height: 50,
-        padding: EdgeInsets.symmetric(vertical: 10),
-        child: Text(
-          widget.name,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headline6
+        child: Container(
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: featureList.length,
+            itemBuilder: (context, index){
+              return Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: 26,
+                  vertical: 5
+                 ),
+                child: featureList[index]
+              );
+            }
+          ),
         ),
       ),
     );

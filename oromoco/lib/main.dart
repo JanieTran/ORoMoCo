@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:oromoco/helper/authenticate.dart';
-import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/helper/helperFunctions.dart';
 import 'package:oromoco/utils/theme/theme.dart';
-import 'package:oromoco/views/dashboardScreen.dart';
+import 'package:oromoco/views/loadingScreen.dart';
 
 void main() {
   runApp(OROMOCO());
@@ -25,10 +24,6 @@ class _OROMOCOState extends State<OROMOCO> {
 
   getLoggedInState() async {
     await HelperFunctions.getUserLoggedInSharedPreferences().then((value) async {
-      if(value == true) {
-        Constants.username = await HelperFunctions.getUserNameSharedPreferences();
-        Constants.email = await HelperFunctions.getUserEmailSharedPreferences();
-      }
       setState(() {
         userIsLoggedIn = value;
       });
@@ -40,7 +35,7 @@ class _OROMOCOState extends State<OROMOCO> {
     return MaterialApp(
       title: 'OROMOCO',
       theme: ORoMoCoTheme.theme,
-      home: userIsLoggedIn != null ? userIsLoggedIn ? DashboardScreen() : Authenticate() : Authenticate(),
+      home: userIsLoggedIn != null ? userIsLoggedIn ? LoadingScreen() : Authenticate() : Authenticate(),
       debugShowCheckedModeBanner: false
     );
   }
