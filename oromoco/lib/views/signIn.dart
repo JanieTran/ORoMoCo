@@ -5,6 +5,7 @@ import 'package:oromoco/helper/helperFunctions.dart';
 import 'package:oromoco/services/auth.dart';
 import 'package:oromoco/services/database.dart';
 import 'package:oromoco/views/dashboardScreen.dart';
+import 'package:oromoco/views/loadingScreen.dart';
 import 'package:oromoco/widgets/widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -43,10 +44,10 @@ class _SignInState extends State<SignIn> {
         if(val != null && val != 0){
           HelperFunctions.saveUserLoggedInSharedPreference(true);
           Navigator.pushReplacement(context, MaterialPageRoute(
-            builder: (context) => DashboardScreen()
+            builder: (context) => LoadingScreen()
           ));
         } else if(val == 0){
-          Fluttertoast.showToast(msg: "Invalid Email or Password. Please try again.");
+          Fluttertoast.showToast(msg: "Email và mật khẩu không hợp lệ. Xin thử lại.");
           Navigator.pushReplacement(context, MaterialPageRoute(
             builder: (context) => Authenticate()
           ));
@@ -80,16 +81,16 @@ class _SignInState extends State<SignIn> {
                         },
                         controller: emailTextEditingController,
                         style: simnpleTextStyle(),
-                        decoration: textFieldInputDecoration('email')
+                        decoration: textFieldInputDecoration('Địa chỉ email')
                       ),
                       TextFormField(
                         obscureText: true,
                         validator: (val){
-                          return val.length > 6 ? null: "Please Provide a longer password";
+                          return val.length > 6 ? null: "Xin điền mật khẩu dài hơn";
                         },
                         controller: passwordTextEditingController,
                         style: simnpleTextStyle(),
-                        decoration: textFieldInputDecoration('password')
+                        decoration: textFieldInputDecoration('Mật khẩu')
                       ),
                     ]
                   ),
@@ -117,7 +118,7 @@ class _SignInState extends State<SignIn> {
                       color: Theme.of(context).primaryColor
                     ),
                     child: Text(
-                      "Sign In", 
+                      "Đăng nhập", 
                       style: mediumTextStyle().copyWith(color: Colors.white),
                     )
                   ),
@@ -126,14 +127,14 @@ class _SignInState extends State<SignIn> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Don't have account? ", style: mediumTextStyle()),
+                    Text("Không có tài khoản? ", style: mediumTextStyle()),
                     GestureDetector(
                       onTap: (){
                         widget.toggle();
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: 8),
-                        child: Text("Register now", style: TextStyle(
+                        child: Text("Đăng kí ngay", style: TextStyle(
                           fontSize: 17,
                           decoration: TextDecoration.underline
                         )),
