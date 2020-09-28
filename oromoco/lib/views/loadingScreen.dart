@@ -32,7 +32,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     });
 
     if(currentUserLoaded){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardScreen()));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardScreen(Constants.bottomBar["home"], 0, 0)));
     }
   }
 

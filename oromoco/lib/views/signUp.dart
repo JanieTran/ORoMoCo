@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/helper/helperFunctions.dart';
 import 'package:oromoco/services/auth.dart';
 import 'package:oromoco/services/database.dart';
@@ -28,11 +29,6 @@ class _SignUpState extends State<SignUp> {
 
   signMeUp() async {
     if(formKey.currentState.validate()){
-      Map<String, String> userInfoMap = {
-        "name": userNameTextEditingController.text,
-        "email": emailTextEditingController.text
-      };
-
       setState(() {
         isLoading = true;
       });
@@ -49,7 +45,8 @@ class _SignUpState extends State<SignUp> {
           return;
         } else{
           authMethod.signUpWithEmailAndPassword(userNameTextEditingController.text, emailTextEditingController.text, passwordTextEditingController.text).then((val){
-            databaseMethods.uploadUserInfo(userInfoMap);
+            Constants.email = emailTextEditingController.text;
+            Constants.username = userNameTextEditingController.text;
             HelperFunctions.saveUserLoggedInSharedPreference(true);
             HelperFunctions.saveUserEmailSharedPreference(emailTextEditingController.text);
             HelperFunctions.saveUserNameSharedPreference(userNameTextEditingController.text);
