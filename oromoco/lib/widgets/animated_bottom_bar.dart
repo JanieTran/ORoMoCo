@@ -14,13 +14,14 @@ class AnimatedBottomBar extends StatefulWidget {
     this.onBarTap,
     this.barStyle,
     this.currentIndex,
-  });
+    Key key
+  }) : super(key: key);
 
   @override
-  _AnimatedBottomBarState createState() => _AnimatedBottomBarState();
+  AnimatedBottomBarState createState() => AnimatedBottomBarState();
 }
 
-class _AnimatedBottomBarState extends State<AnimatedBottomBar>
+class AnimatedBottomBarState extends State<AnimatedBottomBar>
     with TickerProviderStateMixin {
   int selectedBarIndex = 1;
 
@@ -28,6 +29,14 @@ class _AnimatedBottomBarState extends State<AnimatedBottomBar>
   void initState() {
     selectedBarIndex = widget.currentIndex;
     super.initState();
+  }
+
+  void setIndex(int index){
+    print("hello");
+    setState(() {
+      selectedBarIndex = index;
+      widget.onBarTap(selectedBarIndex);
+    });
   }
 
   @override

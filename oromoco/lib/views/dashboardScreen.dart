@@ -49,6 +49,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   bool hasNewBroadcast;
   List<Widget> screenList;
   DateTime currentBackPressTime;
+  GlobalKey<AnimatedBottomBarState> _key = GlobalKey();
 
   Widget featureTile (String name){
     return GestureDetector(
@@ -222,6 +223,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       barStyle: BarStyle(fontSize: 0, iconSize: width * 0.08),
       currentIndex: selectedBarIndex,
       onBarTap: (index) => _changeTab(index),
+      key: _key
     );
 
     SystemChrome.setSystemUIOverlayStyle(
@@ -258,9 +260,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           SystemNavigator.pop();
           return Future.value(true);
         } else{
-          setState(() {
-            selectedBarIndex = Constants.bottomBar["home"];
-          });
+          _key.currentState.setIndex(Constants.bottomBar["home"]);
         }
         return Future.value(false);
       },
