@@ -17,6 +17,9 @@ import '../services/database.dart';
 import 'package:hardware_buttons/hardware_buttons.dart' as HardwareButtons;
 
 class ChatScreen extends StatefulWidget {
+  final String chatRoomID;
+
+  ChatScreen(this.chatRoomID);
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
@@ -122,14 +125,23 @@ class _ChatScreenState extends State<ChatScreen> {
       "image64": base64Encode(img.encodeJpg(resized_img)).toString(),
     };
 
+    String sendTo = "";
+    if (Constants.email.contains(Constants.adminAlias)) {
+      sendTo = widget.chatRoomID
+          .replaceAll(Constants.adminAlias, "")
+          .replaceAll("-", "");
+    } else {
+      sendTo = Constants.adminAlias;
+    }
+
     Map<String, dynamic> messageMap = {
       "message": imageStorage.toString(),
       "sendBy": Constants.email,
-      "sendTo": "@wearevulcan.com",
+      "sendTo": sendTo,
       "time": DateTime.now().millisecondsSinceEpoch
     };
 
-    databaseMethods.addConversationMessage(messageMap);
+    databaseMethods.addConversationMessage(widget.chatRoomID, messageMap);
     messageTextEditingController.text = "";
   }
 
@@ -256,14 +268,22 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   sendMessage() {
+    String sendTo = "";
+    if (Constants.email.contains(Constants.adminAlias)) {
+      sendTo = widget.chatRoomID
+          .replaceAll(Constants.adminAlias, "")
+          .replaceAll("-", "");
+    } else {
+      sendTo = Constants.adminAlias;
+    }
     if (messageTextEditingController.text.isNotEmpty) {
       Map<String, dynamic> messageMap = {
         "message": messageTextEditingController.text,
         "sendBy": Constants.email,
-        "sendTo": "@wearevulcan.com",
+        "sendTo": sendTo,
         "time": DateTime.now().millisecondsSinceEpoch
       };
-      databaseMethods.addConversationMessage(messageMap);
+      databaseMethods.addConversationMessage(widget.chatRoomID, messageMap);
       messageTextEditingController.text = "";
     }
   }
@@ -275,24 +295,41 @@ class _ChatScreenState extends State<ChatScreen> {
       databaseMethods.updateUserChattingWith(null);
     });
 
-    Map<String, dynamic> chatRoomMap = {
-      "user": Constants.email,
-    };
+    if (!Constants.email.contains("@wearevulcan.com")) {
+      String chatRoomID = widget.chatRoomID;
+      List<String> users = [Constants.email, "@wearevulcan.com"];
+      Map<String, dynamic> chatRoomMap = {
+        "users": users,
+        "chatRoomID": chatRoomID
+      };
 
-    databaseMethods.createChatRoom(chatRoomMap);
-    databaseMethods.getConversationMessages(messageLimit).then((value) {
+      databaseMethods.createChatRoom(chatRoomID, chatRoomMap);
+    }
+
+    databaseMethods
+        .getConversationMessages(widget.chatRoomID, messageLimit)
+        .then((value) {
       setState(() {
         chatMessageStream = value;
       });
     });
 
-    databaseMethods.updateUserChattingWith("@wearevulcan.com");
+    String sendTo = "";
+    if (Constants.email.contains(Constants.adminAlias)) {
+      sendTo = widget.chatRoomID
+          .replaceAll(Constants.adminAlias, "")
+          .replaceAll("-", "");
+    } else {
+      sendTo = Constants.adminAlias;
+    }
+
+    databaseMethods.updateUserChattingWith(sendTo);
 
     _controller.addListener(() {
       if(_controller.offset >= _controller.position.maxScrollExtent &&
         !_controller.position.outOfRange){
         messageLimit += 20;
-        databaseMethods.getConversationMessages(messageLimit).then((value) {
+        databaseMethods.getConversationMessages(widget.chatRoomID, messageLimit).then((value) {
           setState(() {
             chatMessageStream = value;
           });

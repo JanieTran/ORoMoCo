@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/views/dashboardScreen.dart';
 import 'package:oromoco/widgets/components.dart';
+import 'package:oromoco/widgets/user_main_info_card.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -58,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                type == "line" ? "Không có vòng khả dụng" : "Không có hợp đồng khả dụng",
+                                "Không có sản phẩm khả dụng",
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context)
                                     .textTheme
@@ -89,6 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final lineItems = [
+      UserMainInfoCard(),
       _horizontalListView("Sản phẩm của tôi", [], "tool-list-on-board.svg", isMyLine: true, type: "line"),
       GestureDetector(
         onTap: (){

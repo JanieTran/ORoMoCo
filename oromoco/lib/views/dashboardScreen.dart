@@ -10,6 +10,7 @@ import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/helper/helperFunctions.dart';
 import 'package:oromoco/services/auth.dart';
 import 'package:oromoco/services/database.dart';
+import 'package:oromoco/views/chatRoomScreen.dart';
 import 'package:oromoco/views/chatScreen.dart';
 import 'package:oromoco/views/controlPanelScreen.dart';
 import 'package:oromoco/views/homeScreen.dart';
@@ -47,7 +48,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int selectedBarIndex;
   bool hasNewMessage;
   bool hasNewBroadcast;
-  List<Widget> screenList;
+  List<Widget> userScreenList;	
+  List<Widget> adminScreenList;
   DateTime currentBackPressTime;
   GlobalKey<AnimatedBottomBarState> _key = GlobalKey();
 
@@ -238,10 +240,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
     );
 
-    screenList = [
+    userScreenList = [
       ToolDetailScreen(),
       HomeScreen(),
-      ChatScreen(),
+      ChatScreen("${Constants.email}-@wearevulcan.com"),
+      NotificationScreen()
+    ];
+
+    adminScreenList = [
+      ToolDetailScreen(),
+      HomeScreen(),
+      ChatRoom(),
       NotificationScreen()
     ];
 
@@ -314,33 +323,49 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ],
             ),
           ),
-          appBar: AppBar(
-            iconTheme: new IconThemeData(
-              color: Theme.of(context).accentColor
-            ),
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                    child: Text(
-                      "OROMOCO",
-                      style: Theme.of(context).textTheme.headline5.copyWith(color: Theme.of(context).accentColor),
-                      textAlign: TextAlign.center,
-                    ),
+          appBar: 
+            isHome ? 
+              null 
+              : PreferredSize(
+                preferredSize: Size.fromHeight(55.0),
+                child: Container(
+                  decoration:
+                      BoxDecoration(color: Colors.white),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: AppBar(
+                          iconTheme: IconThemeData(
+                            color: Colors.black
+                          ),
+                          backgroundColor: Colors.white,
+                          elevation: 5,
+                          title: Row(
+                            mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(),
+                              Text(
+                                barItems[selectedBarIndex].text,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headline5
+                                    .copyWith(
+                                        color: Colors.black),
+                              ),
+                              SizedBox(width: 50)
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Container(
-                  child: Icon(
-                    Icons.menu,
-                    color: Theme.of(context).primaryColor
-                  ),
-                )
-              ],
-            ),
-          ),
-          body: screenList[selectedBarIndex],
+              ),
+          body: Constants.email.contains(Constants.adminAlias)
+              ? adminScreenList[selectedBarIndex]
+              : userScreenList[selectedBarIndex],
           // Container(
           //   padding: EdgeInsets.symmetric(
           //     vertical: 20

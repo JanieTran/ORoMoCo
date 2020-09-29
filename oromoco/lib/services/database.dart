@@ -20,10 +20,10 @@ class DatabaseMethods{
     return Firestore.instance.collection("users").add(userMap);
   }
 
-  addConversationMessage(messageMap) {
+  addConversationMessage(String chatRoomID, messageMap) {
     Firestore.instance
         .collection("chatRoom")
-        .document(Constants.email)
+        .document(chatRoomID)
         .collection("chats")
         .add(messageMap)
         .catchError((e) {
@@ -70,20 +70,20 @@ class DatabaseMethods{
     });
   }
 
-  createChatRoom(chatRoomMap) {
+  createChatRoom(String chatRoomID, chatRoomMap) {
     Firestore.instance
         .collection("chatRoom")
-        .document(Constants.email)
+        .document(chatRoomID)
         .setData(chatRoomMap)
         .catchError((e) {
       print(e.toString());
     });
   }
 
-  getConversationMessages(int messageLimit) async {
+  getConversationMessages(String chatRoomID, int messageLimit) async {
     return await Firestore.instance
         .collection("chatRoom")
-        .document(Constants.email)
+        .document(chatRoomID)
         .collection("chats")
         .orderBy("time", descending: true)
         .limit(messageLimit)
@@ -97,5 +97,12 @@ class DatabaseMethods{
       .orderBy("time", descending: true)
       .limit(20)
       .snapshots();
+  }
+
+  getChatRooms(String username) async {
+    return await Firestore.instance
+        .collection("chatRoom")
+        .where("users", arrayContains: username)
+        .snapshots();
   }
 }

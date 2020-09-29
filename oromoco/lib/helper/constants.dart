@@ -1,5 +1,6 @@
 class Constants{
   static String username = "";
+  static String adminAlias = "@wearevulcan.com";
   static String email = "";
   static Map<String, dynamic> bottomBar = {
     "detail": 0,
