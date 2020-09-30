@@ -34,21 +34,21 @@ class DatabaseMethods{
   Future<void> resetMessageNotification() {
     return Firestore.instance
         .collection("users")
-        .document(Constants.firebase_uid)
+        .document(Constants.firebaseUID)
         .updateData({'hasNewMessage': false});
   }
 
   Future<void> resetBroadcastNotification() {
     return Firestore.instance
         .collection("users")
-        .document(Constants.firebase_uid)
+        .document(Constants.firebaseUID)
         .updateData({'hasNewBroadcast': false});
   }
 
   Future<void> updateUserChattingWith(String sendTo) {
     return Firestore.instance
         .collection("users")
-        .document(Constants.firebase_uid)
+        .document(Constants.firebaseUID)
         .updateData({'chattingWith': sendTo});
   }
 
@@ -93,7 +93,7 @@ class DatabaseMethods{
   getBroadcasts() async {
     return await Firestore.instance
       .collectionGroup("broadcasts")
-      .where("users", arrayContains: Constants.firebase_uid)
+      .where("users", arrayContains: Constants.firebaseUID)
       .orderBy("time", descending: true)
       .limit(20)
       .snapshots();

@@ -10,9 +10,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:oromoco/views/dashboardScreen.dart';
-import '../helper/constants.dart';
-import '../services/database.dart';
+import 'package:oromoco/views/dashboard/dashboardScreen.dart';
+import '../../helper/constants.dart';
+import '../../services/database.dart';
 
 import 'package:hardware_buttons/hardware_buttons.dart' as HardwareButtons;
 

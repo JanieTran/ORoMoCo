@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:oromoco/hardware/batteryWidget.dart';
 import 'package:oromoco/helper/constants.dart';
-import 'package:oromoco/views/dashboardScreen.dart';
+import 'package:oromoco/views/dashboard/dashboardScreen.dart';
 import 'package:oromoco/widgets/components.dart';
 import 'package:oromoco/widgets/user_main_info_card.dart';
-
+import 'package:oromoco/hardware/hardwareWidget.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -11,9 +12,36 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<PerHardware> _hardwareList = [
+    new PerHardware(
+      "Vulcan's Mk10",
+      new PerBattery(
+        id: "1001",
+        type: "LiPo",
+        capacity: "2400mAh"
+      ),
+    ),
+     new PerHardware(
+      "Vulcan's sensor",
+      new PerBattery(
+        id: "1002",
+        type: "LiPo",
+        capacity: "2400mAh"
+      ),
+    ),
+     new PerHardware(
+      "Insole",
+      new PerBattery(
+        id: "1003",
+        type: "LiPo",
+        capacity: "2400mAh"
+      ),
+    )
+  ];
+
   @override
   Widget build(BuildContext context) {
-    Widget _horizontalListView(String title, List _list, String iconItem, {Color color, bool isMyLine, String type}) {
+    Widget _horizontalListView(String title, List _list, String iconItem, {Color color, String type}) {
       return Container(
         color: Colors.transparent,
         child: Column(
@@ -47,10 +75,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ? ListView.builder(
                           itemCount: _list.length,
                           scrollDirection: Axis.horizontal,
-                          // itemBuilder: (_, i) => _buildBox(label, i),
                           itemBuilder: (_, i) => Container(
                             width: MediaQuery.of(context).size.width < 400 ? 400 : MediaQuery.of(context).size.width,
-                            child: Container()
+                            child: HardwareCardTile(_list[i], homePage: true)
                           ),
                         )
                       : Container(
@@ -89,9 +116,13 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    final lineItems = [
+    final hardwareItems = [
       UserMainInfoCard(),
-      _horizontalListView("Sản phẩm của tôi", [], "tool-list-on-board.svg", isMyLine: true, type: "line"),
+      _horizontalListView(
+        "Sản phẩm của tôi",
+        _hardwareList,
+        "tool-list-on-board.svg", 
+        type: "line"),
       GestureDetector(
         onTap: (){
           Navigator.pushReplacement(
@@ -128,9 +159,9 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: ListView.builder(
-          itemCount: lineItems.length,
+          itemCount: hardwareItems.length,
           itemBuilder: (_, i) {
-            return lineItems[i];
+            return hardwareItems[i];
           },
         )
       )

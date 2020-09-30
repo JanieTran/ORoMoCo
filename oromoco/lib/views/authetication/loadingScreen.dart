@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/helper/helperFunctions.dart';
-import 'package:oromoco/views/dashboardScreen.dart';
+import 'package:oromoco/services/database.dart';
+import 'package:oromoco/views/dashboard/dashboardScreen.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -17,6 +19,10 @@ class _LoadingScreenState extends State<LoadingScreen> {
   getUserInformation() async {
     Constants.username = await HelperFunctions.getUserNameSharedPreferences();
     Constants.email = await HelperFunctions.getUserEmailSharedPreferences();
+    DatabaseMethods().getUserByUserEmail(Constants.email).then((value) async {
+      final List<DocumentSnapshot> documents = value.documents;
+      Constants.userID = documents[0]["userID"];
+    });
   }
 
   Future<void> dataLoading() async{

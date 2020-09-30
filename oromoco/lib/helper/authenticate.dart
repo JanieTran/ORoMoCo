@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:oromoco/views/signIn.dart';
-import 'package:oromoco/views/signUp.dart';
+import 'package:oromoco/views/authetication/signIn.dart';
+import 'package:oromoco/views/authetication/signUp.dart';
 
 class Authenticate extends StatefulWidget {
   @override

@@ -88,15 +88,15 @@ class _MainPage extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flutter Bluetooth Serial'),
+        title: Text('Liên kết Bluetooth', style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white)),
       ),
       body: Container(
         child: ListView(
           children: <Widget>[
             Divider(),
-            ListTile(title: const Text('General')),
+            ListTile(title: Text('Điều chỉnh cơ bản', style: Theme.of(context).textTheme.headline6)),
             SwitchListTile(
-              title: const Text('Enable Bluetooth'),
+              title: Text('Bật Bluetooth', style: Theme.of(context).textTheme.headline6.copyWith(fontWeight: FontWeight.normal, color: Colors.black)),
               value: _bluetoothState.isEnabled,
               onChanged: (bool value) {
                 // Do the request and update with the true value then
@@ -114,29 +114,35 @@ class _MainPage extends State<MainPage> {
               },
             ),
             ListTile(
-              title: const Text('Bluetooth status'),
-              subtitle: Text(_bluetoothState.toString()),
+              title: Text('Trạng thái Bluetooth', style: Theme.of(context).textTheme.headline6.copyWith(fontWeight: FontWeight.normal, color: Colors.black)),
+              subtitle: Text(
+                _bluetoothState.toString().contains("STATE_ON") ? "Bật" : 
+                _bluetoothState.toString().contains("STATE_TURNING_ON") ? "Đang bật" :
+                _bluetoothState.toString().contains("STATE_TURNING_OFF") ? "Đang tắt" : 
+                _bluetoothState.toString().contains("STATE_OFF") ? "Tắt" :
+                ""
+              ),
               trailing: RaisedButton(
-                child: const Text('Settings'),
+                child: const Text('Cài đặt'),
                 onPressed: () {
                   FlutterBluetoothSerial.instance.openSettings();
                 },
               ),
             ),
             ListTile(
-              title: const Text('Local adapter address'),
+              title: Text('Địa chỉ phần cứng', style: Theme.of(context).textTheme.headline6.copyWith(fontWeight: FontWeight.normal, color: Colors.black)),
               subtitle: Text(_address),
             ),
             ListTile(
-              title: const Text('Local adapter name'),
+              title: Text('Tên phần cứng', style: Theme.of(context).textTheme.headline6.copyWith(fontWeight: FontWeight.normal, color: Colors.black)),
               subtitle: Text(_name),
               onLongPress: null,
             ),
             ListTile(
               title: _discoverableTimeoutSecondsLeft == 0
-                  ? const Text("Discoverable")
+                  ? Text("Cho phép quét thiết bị", style: Theme.of(context).textTheme.headline6.copyWith(fontWeight: FontWeight.normal, color: Colors.black))
                   : Text(
-                      "Discoverable for ${_discoverableTimeoutSecondsLeft}s"),
+                      "Bật quét thiết bị trong ${_discoverableTimeoutSecondsLeft}s", style: Theme.of(context).textTheme.headline6.copyWith(fontWeight: FontWeight.normal, color: Colors.black)),
               subtitle: const Text("OROMOCO_App"),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -190,33 +196,33 @@ class _MainPage extends State<MainPage> {
               ),
             ),
             Divider(),
-            ListTile(title: const Text('Devices discovery and connection')),
-            SwitchListTile(
-              title: const Text('Auto-try specific pin when pairing'),
-              subtitle: const Text('Pin 1234'),
-              value: _autoAcceptPairingRequests,
-              onChanged: (bool value) {
-                setState(() {
-                  _autoAcceptPairingRequests = value;
-                });
-                if (value) {
-                  FlutterBluetoothSerial.instance.setPairingRequestHandler(
-                      (BluetoothPairingRequest request) {
-                    print("Trying to auto-pair with Pin 1234");
-                    if (request.pairingVariant == PairingVariant.Pin) {
-                      return Future.value("1234");
-                    }
-                    return null;
-                  });
-                } else {
-                  FlutterBluetoothSerial.instance
-                      .setPairingRequestHandler(null);
-                }
-              },
-            ),
+            ListTile(title: Text('Các thiết bị đã liên kết', style: Theme.of(context).textTheme.headline6)),
+            // SwitchListTile(
+            //   title: const Text('Auto-try specific pin when pairing'),
+            //   subtitle: const Text('Pin 1234'),
+            //   value: _autoAcceptPairingRequests,
+            //   onChanged: (bool value) {
+            //     setState(() {
+            //       _autoAcceptPairingRequests = value;
+            //     });
+            //     if (value) {
+            //       FlutterBluetoothSerial.instance.setPairingRequestHandler(
+            //           (BluetoothPairingRequest request) {
+            //         print("Trying to auto-pair with Pin 1234");
+            //         if (request.pairingVariant == PairingVariant.Pin) {
+            //           return Future.value("1234");
+            //         }
+            //         return null;
+            //       });
+            //     } else {
+            //       FlutterBluetoothSerial.instance
+            //           .setPairingRequestHandler(null);
+            //     }
+            //   },
+            // ),
             ListTile(
               title: RaisedButton(
-                  child: const Text('Explore discovered devices'),
+                  child: const Text('Xem dang sách thiết bị'),
                   onPressed: () async {
                     final BluetoothDevice selectedDevice =
                         await Navigator.of(context).push(
@@ -236,7 +242,7 @@ class _MainPage extends State<MainPage> {
             ),
             ListTile(
               title: RaisedButton(
-                child: const Text('Connect to paired device to chat'),
+                child: const Text('Kết nối để sử dụng'),
                 onPressed: () async {
                   final BluetoothDevice selectedDevice =
                       await Navigator.of(context).push(
@@ -256,59 +262,59 @@ class _MainPage extends State<MainPage> {
                 },
               ),
             ),
-            Divider(),
-            ListTile(title: const Text('Multiple connections example')),
-            ListTile(
-              title: RaisedButton(
-                child: ((_collectingTask != null && _collectingTask.inProgress)
-                    ? const Text('Disconnect and stop background collecting')
-                    : const Text('Connect to start background collecting')),
-                onPressed: () async {
-                  if (_collectingTask != null && _collectingTask.inProgress) {
-                    await _collectingTask.cancel();
-                    setState(() {
-                      /* Update for `_collectingTask.inProgress` */
-                    });
-                  } else {
-                    final BluetoothDevice selectedDevice =
-                        await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return SelectBondedDevicePage(
-                              checkAvailability: false);
-                        },
-                      ),
-                    );
+            // Divider(),
+            // ListTile(title: const Text('Multiple connections example')),
+            // ListTile(
+            //   title: RaisedButton(
+            //     child: ((_collectingTask != null && _collectingTask.inProgress)
+            //         ? const Text('Disconnect and stop background collecting')
+            //         : const Text('Connect to start background collecting')),
+            //     onPressed: () async {
+            //       if (_collectingTask != null && _collectingTask.inProgress) {
+            //         await _collectingTask.cancel();
+            //         setState(() {
+            //           /* Update for `_collectingTask.inProgress` */
+            //         });
+            //       } else {
+            //         final BluetoothDevice selectedDevice =
+            //             await Navigator.of(context).push(
+            //           MaterialPageRoute(
+            //             builder: (context) {
+            //               return SelectBondedDevicePage(
+            //                   checkAvailability: false);
+            //             },
+            //           ),
+            //         );
 
-                    if (selectedDevice != null) {
-                      await _startBackgroundTask(context, selectedDevice);
-                      setState(() {
-                        /* Update for `_collectingTask.inProgress` */
-                      });
-                    }
-                  }
-                },
-              ),
-            ),
-            ListTile(
-              title: RaisedButton(
-                child: const Text('View background collected data'),
-                onPressed: (_collectingTask != null)
-                    ? () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return ScopedModel<BackgroundCollectingTask>(
-                                model: _collectingTask,
-                                child: BackgroundCollectedPage(),
-                              );
-                            },
-                          ),
-                        );
-                      }
-                    : null,
-              ),
-            ),
+            //         if (selectedDevice != null) {
+            //           await _startBackgroundTask(context, selectedDevice);
+            //           setState(() {
+            //             /* Update for `_collectingTask.inProgress` */
+            //           });
+            //         }
+            //       }
+            //     },
+            //   ),
+            // ),
+            // ListTile(
+            //   title: RaisedButton(
+            //     child: const Text('View background collected data'),
+            //     onPressed: (_collectingTask != null)
+            //         ? () {
+            //             Navigator.of(context).push(
+            //               MaterialPageRoute(
+            //                 builder: (context) {
+            //                   return ScopedModel<BackgroundCollectingTask>(
+            //                     model: _collectingTask,
+            //                     child: BackgroundCollectedPage(),
+            //                   );
+            //                 },
+            //               ),
+            //             );
+            //           }
+            //         : null,
+            //   ),
+            // ),
           ],
         ),
       ),

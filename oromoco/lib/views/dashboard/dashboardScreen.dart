@@ -10,13 +10,13 @@ import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/helper/helperFunctions.dart';
 import 'package:oromoco/services/auth.dart';
 import 'package:oromoco/services/database.dart';
-import 'package:oromoco/views/chatRoomScreen.dart';
-import 'package:oromoco/views/chatScreen.dart';
-import 'package:oromoco/views/controlPanelScreen.dart';
-import 'package:oromoco/views/homeScreen.dart';
-import 'package:oromoco/views/notificationScreen.dart';
-import 'package:oromoco/views/toolDetailScreen.dart';
+import 'package:oromoco/views/dashboard/chatRoomScreen.dart';
+import 'package:oromoco/views/dashboard/chatScreen.dart';
+import 'package:oromoco/views/dashboard/homeScreen.dart';
+import 'package:oromoco/views/dashboard/notificationScreen.dart';
+import 'package:oromoco/views/dashboard/toolDetailScreen.dart';
 import 'package:oromoco/widgets/animated_bottom_bar.dart';
+import 'package:oromoco/views/dashboard/profileScreen.dart';
 
 class DashboardScreen extends StatefulWidget {
   final int index;
@@ -44,7 +44,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   // final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   DatabaseMethods databaseMethods = new DatabaseMethods();
-  List featureList = [];
   int selectedBarIndex;
   bool hasNewMessage;
   bool hasNewBroadcast;
@@ -52,37 +51,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   List<Widget> adminScreenList;
   DateTime currentBackPressTime;
   GlobalKey<AnimatedBottomBarState> _key = GlobalKey();
-
-  Widget featureTile (String name){
-    return GestureDetector(
-      onTap: (){
-        onFeatureTap(name);
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: Theme.of(context).accentColor
-        ),
-        height: 50,
-        padding: EdgeInsets.symmetric(vertical: 10),
-        child: Text(
-          name,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headline6
-        ),
-      ),
-    );
-  }
-
-  void onFeatureTap(name) async {
-    if(name == "Pin"){
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                ControlPanelScreen()));
-    }
-  }
 
   void _changeTab(int index) {
     setState(() {
@@ -180,18 +148,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
         final DocumentReference docRef =
             await databaseMethods.uploadUserInfo(userInfoMap);
 
-        Constants.firebase_uid = docRef.documentID;
-        await databaseMethods.updateUserUid(Constants.firebase_uid);
+        Constants.firebaseUID = docRef.documentID;
+        await databaseMethods.updateUserUid(Constants.firebaseUID);
       } else {
-        Constants.firebase_uid = documents[0]['id'];
+        Constants.firebaseUID = documents[0]['id'];
         if (documents[0]["token"] != token) {
           Fluttertoast.showToast(msg: "Đăng nhập lần đầu tiên trên thiết bị");
-          await databaseMethods.updateUserToken(token, Constants.firebase_uid);
+          await databaseMethods.updateUserToken(token, Constants.firebaseUID);
         }
 
         if(documents[0]["hasNewBroadcast"] == null || documents[0]["hasNewMessage"] == null){
-          await databaseMethods.updateUserMissingField(Constants.firebase_uid, "hasNewMessage", false);
-          await databaseMethods.updateUserMissingField(Constants.firebase_uid, "hasNewBroadcast", false);
+          await databaseMethods.updateUserMissingField(Constants.firebaseUID, "hasNewMessage", false);
+          await databaseMethods.updateUserMissingField(Constants.firebaseUID, "hasNewBroadcast", false);
           setState(() {
             hasNewBroadcast = false;
             hasNewMessage = false;
@@ -208,15 +176,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    featureList.clear();
-    featureList.add(featureTile("Pin"));
-
     double width = MediaQuery.of(context).size.width;
     List<BarItem> barItems = [
       BarItem(text: "Sản phẩm", iconText: "Sản phẩm", iconDataNone: "tool-list.svg", iconDataClicked: "tool-list-on-board.svg", isNotified: false),
       BarItem(text: "Trang chủ", iconText: "Trang chủ", iconDataNone: "trang-chu.svg", iconDataClicked: "trang-chu-on-board.svg", isNotified: false),
-      BarItem(text: "Trò chuyện cùng Vulcan", iconText: "Tin nhắn", iconDataNone:"tin-nhan.svg", iconDataClicked: "tin-nhan-on-board.svg", isNotified: hasNewMessage),
-      BarItem(text: "Thông báo", iconText: "Thông báo", iconDataNone: "thong-bao.svg", iconDataClicked: "thong-bao-on-board.svg", isNotified: hasNewBroadcast)
+      BarItem(text: "Trò chuyện", iconText: "Tin nhắn", iconDataNone:"tin-nhan.svg", iconDataClicked: "tin-nhan-on-board.svg", isNotified: hasNewMessage),
+      BarItem(text: "Thông báo", iconText: "Thông báo", iconDataNone: "thong-bao.svg", iconDataClicked: "thong-bao-on-board.svg", isNotified: hasNewBroadcast),
+      BarItem(text: "Tài khoản", iconText: "Tài khoản", iconDataNone: "thong-tin-tai-khoan.svg", iconDataClicked: "thong-tin-tai-khoan-on-board.svg", isNotified: false, color: Theme.of(context).primaryColor)
     ];
 
     AnimatedBottomBar bottomNavigationBar = new AnimatedBottomBar(
@@ -244,14 +210,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ToolDetailScreen(),
       HomeScreen(),
       ChatScreen("${Constants.email}-@wearevulcan.com"),
-      NotificationScreen()
+      NotificationScreen(),
+      ProfileScreen()
     ];
 
     adminScreenList = [
       ToolDetailScreen(),
       HomeScreen(),
       ChatRoom(),
-      NotificationScreen()
+      NotificationScreen(),
+      ProfileScreen()
     ];
 
     final bool isHome = selectedBarIndex == Constants.bottomBar["home"];
@@ -285,14 +253,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        Constants.username,
-                        style: Theme.of(context).textTheme.headline5.copyWith(color: Theme.of(context).accentColor)
+                        "Xin chào,",
+                        style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.white, fontWeight: FontWeight.normal)
                       ),
-                      SizedBox(height: 10),
+                      SizedBox(height: 20),
                       Text(
-                        Constants.email,
-                        style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white)
-                      ),
+                        Constants.username,
+                        textAlign: TextAlign.right,
+                        style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.amber)
+                      )
                     ]
                   ),
                   decoration: BoxDecoration(
@@ -301,7 +270,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 ListTile(
                   title: Text(
-                    'Devices',
+                    'Kết nối',
                     style: Theme.of(context).textTheme.headline6
                   ),
                   onTap: () {
@@ -311,7 +280,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 ListTile(
                   title: Text(
-                    'Sign Out',
+                    'Đăng xuất',
                     style: Theme.of(context).textTheme.headline6
                   ),
                   onTap: () {
@@ -366,26 +335,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           body: Constants.email.contains(Constants.adminAlias)
               ? adminScreenList[selectedBarIndex]
               : userScreenList[selectedBarIndex],
-          // Container(
-          //   padding: EdgeInsets.symmetric(
-          //     vertical: 20
-          //   ),
-          //   child: Container(
-          //     child: ListView.builder(
-          //       shrinkWrap: true,
-          //       itemCount: featureList.length,
-          //       itemBuilder: (context, index){
-          //         return Container(
-          //           padding: EdgeInsets.symmetric(
-          //             horizontal: 26,
-          //             vertical: 5
-          //            ),
-          //           child: featureList[index]
-          //         );
-          //       }
-          //     ),
-          //   ),
-          // ),
           bottomNavigationBar: bottomNavigationBar,
         ),
       ),

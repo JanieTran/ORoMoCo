@@ -5,7 +5,7 @@ import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/helper/helperFunctions.dart';
 import 'package:oromoco/services/auth.dart';
 import 'package:oromoco/services/database.dart';
-import 'package:oromoco/views/signIn.dart';
+import 'package:oromoco/views/authetication/signIn.dart';
 import 'package:oromoco/widgets/widget.dart';
 
 class SignUp extends StatefulWidget {

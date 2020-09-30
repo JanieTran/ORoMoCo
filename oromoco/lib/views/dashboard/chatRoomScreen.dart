@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/services/auth.dart';
 import 'package:oromoco/services/database.dart';
-import 'package:oromoco/views/chatScreen.dart';
+import 'package:oromoco/views/dashboard/chatScreen.dart';
 
 class ChatRoom extends StatefulWidget {
   @override

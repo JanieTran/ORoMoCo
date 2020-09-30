@@ -8,5 +8,6 @@ class Constants{
     "chat": 2,
     "notification": 3
   };
-  static String firebase_uid;
+  static String firebaseUID = "";
+  static String userID = "";
 }

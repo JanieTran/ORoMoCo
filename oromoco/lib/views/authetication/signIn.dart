@@ -4,8 +4,8 @@ import 'package:oromoco/helper/authenticate.dart';
 import 'package:oromoco/helper/helperFunctions.dart';
 import 'package:oromoco/services/auth.dart';
 import 'package:oromoco/services/database.dart';
-import 'package:oromoco/views/dashboardScreen.dart';
-import 'package:oromoco/views/loadingScreen.dart';
+import 'package:oromoco/views/dashboard/dashboardScreen.dart';
+import 'package:oromoco/views/authetication/loadingScreen.dart';
 import 'package:oromoco/widgets/widget.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
