@@ -8,8 +8,9 @@ class SelectBondedDevicePage extends StatefulWidget {
   /// If true, on page start there is performed discovery upon the bonded devices.
   /// Then, if they are not avaliable, they would be disabled from the selection.
   final bool checkAvailability;
+  final String address;
 
-  const SelectBondedDevicePage({this.checkAvailability = true});
+  const SelectBondedDevicePage({this.checkAvailability = true, this.address});
 
   @override
   _SelectBondedDevicePage createState() => new _SelectBondedDevicePage();
@@ -117,6 +118,16 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> {
               },
             ))
         .toList();
+
+    /*
+    Check to see if there is an address similar, if yes then immediate return
+    */
+    for(int i = 0; i < list.length; i++){
+      if(list[i].device.address == widget.address){
+        Navigator.of(context).pop(list[i].device);
+      }
+    }
+    
     return Scaffold(
       appBar: AppBar(
         title: Text('Select device'),

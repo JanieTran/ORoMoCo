@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:oromoco/bluetooth/utils/utils.dart';
 
 class ChatPage extends StatefulWidget {
   final BluetoothDevice server;
@@ -35,6 +36,7 @@ class _ChatPage extends State<ChatPage> {
   bool get isConnected => connection != null && connection.isConnected;
 
   bool isDisconnecting = false;
+  int currentCommand = -1;
 
   @override
   void initState() {
@@ -68,6 +70,94 @@ class _ChatPage extends State<ChatPage> {
       print('Cannot connect, exception occured');
       print(error);
     });
+  }
+
+  Widget _horizontalButtonList(List<DefaultCommand> _defaultCommand) {
+    return Container(
+      color: Colors.transparent,
+      padding: EdgeInsets.only(
+        left: 26,
+        right: 26,
+        top: 10
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            margin: EdgeInsets.only(bottom: 5),
+            child: Row(
+              children: <Widget>[
+                Text(
+                  "Câu lệnh chuẩn",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline6
+                      .copyWith(color: Color(0xFF707070), fontWeight: FontWeight.normal
+                  )
+                )
+              ],
+            ),
+          ),
+          Stack(
+            children: <Widget>[
+              Container(
+                height: 50,
+                child: _defaultCommand.length != 0
+                  ? ListView.builder(
+                      itemCount: _defaultCommand.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (_, i) => Container(
+                        width: 200,
+                        padding: EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                        child: ButtonTheme(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)
+                          ),
+                          buttonColor: currentCommand == i ? Theme.of(context).primaryColor: Color(0xFFF0F0F0),
+                          child: RaisedButton(
+                            child: Text(
+                              _defaultCommand[i].function,
+                              style: Theme.of(context).textTheme.headline6.copyWith(
+                                color: currentCommand == i ? Colors.white : Colors.black,
+                                fontWeight: FontWeight.normal
+                              ),
+                            ),
+                            onPressed: (){
+                              _sendMessage(_defaultCommand[i].command, defaultCommand: true);
+                              if(currentCommand == i){
+                                setState(() {
+                                  currentCommand = -1;
+                                });
+                                currentCommand = -1;
+                              } else{
+                                setState(() {
+                                  currentCommand = i;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    )
+                  : Container(),
+              ),
+              _defaultCommand.length > 1 ? Positioned(
+                right: 0,
+                child: Container(
+                  width: 30,
+                  height: 316,
+                  child: Icon(
+                    Icons.arrow_right,
+                    color: Colors.black.withOpacity(0.4),
+                    size: 40
+                  ),
+                ),
+              ) : Container()
+            ],
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -111,9 +201,9 @@ class _ChatPage extends State<ChatPage> {
     return Scaffold(
       appBar: AppBar(
           title: (isConnecting
-              ? Text('Connecting chat to ' + widget.server.name + '...')
+              ? Text('Kết nối với ' + widget.server.name + '...')
               : isConnected
-                  ? Text('Live chat with ' + widget.server.name)
+                  ? Text('Trò chuyện cùng ' + widget.server.name)
                   : Text('Chat log with ' + widget.server.name))),
       body: SafeArea(
         child: Column(
@@ -124,6 +214,7 @@ class _ChatPage extends State<ChatPage> {
                   controller: listScrollController,
                   children: list),
             ),
+            _horizontalButtonList(BluetoothDefaultCommand.defaultCommandList),
             Row(
               children: <Widget>[
                 Flexible(
@@ -134,10 +225,10 @@ class _ChatPage extends State<ChatPage> {
                       controller: textEditingController,
                       decoration: InputDecoration.collapsed(
                         hintText: isConnecting
-                            ? 'Wait until connected...'
+                            ? 'Đợi kết nối...'
                             : isConnected
-                                ? 'Type your message...'
-                                : 'Chat got disconnected',
+                                ? 'Gửi tin nhắn...'
+                                : 'Trò chuyện bị hoãn',
                         hintStyle: const TextStyle(color: Colors.grey),
                       ),
                       enabled: isConnected,
@@ -209,7 +300,7 @@ class _ChatPage extends State<ChatPage> {
     }
   }
 
-  void _sendMessage(String text) async {
+  void _sendMessage(String text, {bool defaultCommand = false}) async {
     text = text.trim();
     textEditingController.clear();
 
@@ -218,9 +309,11 @@ class _ChatPage extends State<ChatPage> {
         connection.output.add(utf8.encode(text + "\r\n"));
         await connection.output.allSent;
 
-        setState(() {
-          messages.add(_Message(clientID, text));
-        });
+        if(!defaultCommand){
+          setState(() {
+            messages.add(_Message(clientID, text));
+          });
+        }
 
         Future.delayed(Duration(milliseconds: 333)).then((_) {
           listScrollController.animateTo(

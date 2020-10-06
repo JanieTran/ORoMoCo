@@ -34,7 +34,7 @@ class DatabaseMethods{
         .getDocuments();
   }
 
-    Future<QuerySnapshot> getHardwareDatasheet(String hardwareID) async {
+  Future<QuerySnapshot> getHardwareDatasheet(String hardwareID) async {
     return await Firestore.instance
         .collection("hardware")
         .where("hardwareID", isEqualTo: hardwareID)
@@ -106,6 +106,18 @@ class DatabaseMethods{
         .collection("chatRoom")
         .document(chatRoomID)
         .collection("chats")
+        .orderBy("time", descending: true)
+        .limit(messageLimit)
+        .snapshots();
+  }
+
+  getHardwareLog(String userID, String hardwareDocumentID, int messageLimit) async {
+    return await Firestore.instance
+        .collection("users")
+        .document(userID)
+        .collection("hardware")
+        .document(hardwareDocumentID)
+        .collection("logs")
         .orderBy("time", descending: true)
         .limit(messageLimit)
         .snapshots();

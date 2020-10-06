@@ -12,6 +12,7 @@ class PerHardware{
   final bool bluetoothSupport;
   final String name;
   final String version;
+  final String logDocumentID;
   String status = "tắt";
 
   PerHardware(
@@ -23,7 +24,8 @@ class PerHardware{
       @required this.lastSyncDate,
       @required this.address,
       @required this.bluetoothSupport,
-      @required this.version
+      @required this.version,
+      @required this.logDocumentID
     }
   );
 

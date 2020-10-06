@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:oromoco/bluetooth/ChatPage.dart';
+import 'package:oromoco/bluetooth/SelectBondedDevicePage.dart';
 import 'package:oromoco/hardware/batteryWidget.dart';
 import 'package:oromoco/hardware/hardwareWidget.dart';
+import 'package:intl/intl.dart';
+import 'package:oromoco/helper/constants.dart';
+import 'package:oromoco/services/database.dart';
 
 class HardwareDetailScreen extends StatefulWidget {
   PerHardware perHardware;
@@ -13,9 +19,49 @@ class HardwareDetailScreen extends StatefulWidget {
 }
 
 class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
+  Stream hardwareLogStream;
+  int messageLimit = 20;
+  ScrollController _scrollController = new ScrollController();
+
+  Widget logTerminal(){
+    return Container(
+      height: 300,
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 26, vertical: 10),
+      child: StreamBuilder(
+        stream: hardwareLogStream,
+        builder: (context, snapshot){
+          return snapshot.hasData
+            ? ListView.builder(
+              reverse: false,
+              itemCount: snapshot.data.documents.length,
+              controller: _scrollController,
+              itemBuilder: (context, index){
+                String time = DateFormat("dd/MM - kk:mm").format(DateTime.fromMillisecondsSinceEpoch(snapshot.data.documents[index].data["time"]).toLocal()).toString();
+                return LogTile(
+                  time,
+                  snapshot.data.documents[index].data["data"]
+                );
+              },
+            )
+          : Container();
+        }
+      )
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    DatabaseMethods().getHardwareLog(Constants.firebaseUID, widget.perHardware.logDocumentID, messageLimit).then((value) {
+      setState(() {
+        hardwareLogStream = value;
+      });
+    });
   }
 
   Widget textBuilder(
@@ -441,14 +487,132 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
                               color: Colors.black),
                         ),
                       ),
+                      SizedBox(height: 10),
+                      logTerminal(),
                       SizedBox(height: 50)
                     ]
                   )
               ),
             ),
-          )
+          ),
+          bottomNavigationBar: Container(
+            decoration: BoxDecoration(
+              color: Color(0xFFF5F5F5), 
+              // boxShadow: [
+              //   BoxShadow(color: Colors.black38, blurRadius: 5)
+              // ]
+            ),
+            padding: EdgeInsets.symmetric(vertical: 2),
+            height: 50,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(width: 10),
+                Expanded(
+                  child: ButtonTheme(
+                    height: 50,
+                    child: RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)
+                      ),
+                      elevation: 1,
+                      color: Colors.white,
+                      child: Text(
+                        'Kết nối',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline6.copyWith(fontWeight: FontWeight.bold, color: Color(0xFF09764C)),
+                      ),
+                      onPressed: () async {
+                        final BluetoothDevice selectedDevice =
+                            await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) {
+                              return SelectBondedDevicePage(checkAvailability: false, address: widget.perHardware.bluetoothID);
+                            },
+                          ),
+                        );
+
+                        if (selectedDevice != null) {
+                          print('Connect -> selected ' + selectedDevice.address);
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return ChatPage(server: selectedDevice);
+                              },
+                            ),
+                          );
+                        } else {
+                          print('Connect -> no device selected');
+                        }
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: ButtonTheme(
+                    height: 50,
+                    child: RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5)
+                      ),
+                      elevation: 1,
+                      color: Colors.white,
+                      child: Text(
+                        'Cài đặt',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline6.copyWith(fontWeight: FontWeight.bold, 
+                            color: Color(0xFF09764C)),
+                      ),
+                      onPressed: (){
+                         print("configure");
+                      }),
+                  ),
+                ),
+                SizedBox(width: 10),
+              ],
+            )
+          ),
         ),
       ),
+    );
+  }
+}
+
+class LogTile extends StatelessWidget {
+  final String time;
+  final String data;
+
+  LogTile(this.time, this.data);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Flexible(
+            flex: 1,
+            child: Text(
+              time,
+              style: Theme.of(context).textTheme.bodyText1.copyWith(color: Color(0xFF707070))
+            ),
+          ),
+          SizedBox(width: 10),
+          Flexible(
+            flex: 2,
+            child: Text(
+              data,
+              style: Theme.of(context).textTheme.bodyText1.copyWith(color: Colors.black)
+            ),
+          )
+        ],
+      )
     );
   }
 }

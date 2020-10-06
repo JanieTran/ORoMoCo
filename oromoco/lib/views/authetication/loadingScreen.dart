@@ -23,15 +23,16 @@ class _LoadingScreenState extends State<LoadingScreen> {
   getUserInformation() async {
     Constants.username = await HelperFunctions.getUserNameSharedPreferences();
     Constants.email = await HelperFunctions.getUserEmailSharedPreferences();
-    DatabaseMethods().getUserByUserEmail(Constants.email).then((value) async {
+    await DatabaseMethods().getUserByUserEmail(Constants.email).then((value) async {
       final List<DocumentSnapshot> documents = value.documents;
       Constants.userID = documents[0]["userID"];
+      Constants.firebaseUID = documents[0]["id"];
     });
   }
 
   getHardwareInformation() async {
     List<PerHardware> _hardwareList = [];
-    DatabaseMethods().getUserHardware(Constants.firebaseUID).then((value) async {
+    await DatabaseMethods().getUserHardware(Constants.firebaseUID).then((value) async {
       final List<DocumentSnapshot> documents = value.documents;
       for(int i = 0 ; i < documents.length;i++){
         await DatabaseMethods().getHardwareDatasheet(documents[i]["hardwareID"]).then((val){
@@ -50,6 +51,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
             version = hardware[0]["version"];
           }
           _hardwareList.add(new PerHardware(
+            logDocumentID: documents[i]["documentID"],
             version: version,
             bluetoothID: documents[i]["bluetoothID"], 
             address: documents[i]["address"], 

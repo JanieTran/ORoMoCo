@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:oromoco/helper/constants.dart';
+import 'package:oromoco/widgets/components.dart';
 
 class UserMainInfoCard extends StatelessWidget {
   const UserMainInfoCard({Key key}) : super(key: key);
@@ -49,34 +50,51 @@ class UserMainInfoCard extends StatelessWidget {
               new Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // new Text(
-                  //   'Xin chào,',
-                  //   style: Theme.of(context).textTheme.headline5.copyWith(
-                  //         color: Colors.white,
-                  //         fontSize: 15,
-                  //         fontWeight: FontWeight.normal
-                  //       ),
-                  // ),
-                  // new Text(
-                  //   Constants.username,
-                  //   style: Theme.of(context).textTheme.headline5.copyWith(
-                  //     color: Colors.amber,
-                  //   ),
-                  // ),
+                  new Text(
+                    'Xin chào,',
+                    style: Theme.of(context).textTheme.headline5.copyWith(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.normal
+                        ),
+                  ),
+                  SizedBox(height: 10),
+                  new Text(
+                    Constants.username,
+                    style: Theme.of(context).textTheme.headline5.copyWith(
+                      color: Colors.amber,
+                    ),
+                  ),
                 ],
               ),
               new Column(
                 children: [
                   new Row(
                     children: [
-
+                      new InfoItem(
+                        color: Colors.white,
+                        iconItem: "tag.svg",
+                        dimension: 18,
+                        title: "----",
+                        amount: "---"),
                     ],
                   ),
                   SizedBox(height: 8),
                   new Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-
+                      new InfoItem(
+                        color: Colors.white,
+                        iconItem: "tag.svg",
+                        dimension: 20,
+                        title: "----",
+                        amount: "---"),
+                      new InfoItem(
+                          color: Colors.white,
+                          iconItem: "tag.svg",
+                          dimension: 20,
+                          title: "----",
+                          amount: "---"),
                     ],
                   )
                 ],
