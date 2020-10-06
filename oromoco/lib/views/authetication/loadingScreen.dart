@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:oromoco/hardware/batteryWidget.dart';
+import 'package:oromoco/hardware/hardwareWidget.dart';
 import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/helper/helperFunctions.dart';
 import 'package:oromoco/services/database.dart';
@@ -13,8 +15,10 @@ class LoadingScreen extends StatefulWidget {
 class _LoadingScreenState extends State<LoadingScreen> {
   String message;
   double percentage;
-  final double loadingCurrentUser = 1.0;
+  final double loadingCurrentUser = 0.2;
+  final double loadingCurrentHardware = 0.8;
   bool currentUserLoaded = false;
+  bool currentHardwareLoaded = false;
 
   getUserInformation() async {
     Constants.username = await HelperFunctions.getUserNameSharedPreferences();
@@ -22,6 +26,45 @@ class _LoadingScreenState extends State<LoadingScreen> {
     DatabaseMethods().getUserByUserEmail(Constants.email).then((value) async {
       final List<DocumentSnapshot> documents = value.documents;
       Constants.userID = documents[0]["userID"];
+    });
+  }
+
+  getHardwareInformation() async {
+    List<PerHardware> _hardwareList = [];
+    DatabaseMethods().getUserHardware(Constants.firebaseUID).then((value) async {
+      final List<DocumentSnapshot> documents = value.documents;
+      for(int i = 0 ; i < documents.length;i++){
+        await DatabaseMethods().getHardwareDatasheet(documents[i]["hardwareID"]).then((val){
+          String hardwareName = "";
+          bool bluetoothSupport = false;
+          String batteryCapacity = "";
+          String batteryType = "";
+          String version = "";
+          
+          final List<DocumentSnapshot> hardware = val.documents;
+          if(hardware.length == 1){
+            hardwareName = hardware[0]["name"];
+            bluetoothSupport = hardware[0]["bluetoothSupport"];
+            batteryCapacity = hardware[0]["batteryCapacity"];
+            batteryType = hardware[0]["batteryType"];
+            version = hardware[0]["version"];
+          }
+          _hardwareList.add(new PerHardware(
+            version: version,
+            bluetoothID: documents[i]["bluetoothID"], 
+            address: documents[i]["address"], 
+            bluetoothSupport: bluetoothSupport,
+            perBattery: new PerBattery(
+              type: batteryType,
+              capacity: batteryCapacity
+            ),
+            name: hardwareName, 
+            hadrwareID: documents[i]["hardwareID"], 
+            lastSyncDate: documents[i]["lastSyncDate"].toString()
+          ));
+        });
+      }
+      Constants.hardwareList = _hardwareList;
     });
   }
 
@@ -34,11 +77,18 @@ class _LoadingScreenState extends State<LoadingScreen> {
 
     setState(() {
       currentUserLoaded = true;
+      message = "Tải phần cứng của bạn";
+    });
+
+    await getHardwareInformation();
+
+    setState(() {
+      currentHardwareLoaded = true;
       message = "Hoàn tất";
     });
 
-    if(currentUserLoaded){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => DashboardScreen(Constants.bottomBar["home"], 0, 0)));
+    if(currentUserLoaded && currentHardwareLoaded){
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DashboardScreen(Constants.bottomBar["home"], 0, 0)));
     }
   }
 
@@ -90,7 +140,8 @@ class _LoadingScreenState extends State<LoadingScreen> {
                     ),
                     height: 10,
                     width: (MediaQuery.of(context).size.width - (26 * 2))*(
-                      (currentUserLoaded ? loadingCurrentUser : 0.0)
+                      (currentUserLoaded ? loadingCurrentUser : 0.0) +
+                      (currentHardwareLoaded ? loadingCurrentHardware : 0.0)
                     )
                   ),
                 )

@@ -362,20 +362,53 @@ class _ChatScreenState extends State<ChatScreen> {
       },
       child: SafeArea(
         child: Scaffold(
-            body: Container(
-                color: Colors.white,
-                child: Stack(children: [
-                  Column(
-                    children: <Widget>[
-                      chatMessageList(), 
-                      (isShowSticker ? buildSticker() : Container()),
-                      chatMessageInput()
-                    ],
-                  )
-                ]
-              )
+          appBar: Constants.email.contains(Constants.adminAlias) ? PreferredSize(
+            preferredSize: Size.fromHeight(60.0),
+            child: Container(
+              decoration: BoxDecoration(color: Colors.white),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: AppBar(
+                      iconTheme: IconThemeData(color: Colors.black),
+                      backgroundColor: Colors.white,
+                      elevation: 5,
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          SizedBox(),
+                          Text(
+                            "Tin nhắn",
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline5
+                                .copyWith(color: Colors.black),
+                          ),
+                          // TkcPopupMenuButton(2)
+                          SizedBox(width: 50)
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ) : null,
+          body: Container(
+              color: Colors.white,
+              child: Stack(children: [
+                Column(
+                  children: <Widget>[
+                    chatMessageList(), 
+                    (isShowSticker ? buildSticker() : Container()),
+                    chatMessageInput()
+                  ],
+                )
+              ]
             )
-          ),
+          )
+        ),
       ),
     );
   }

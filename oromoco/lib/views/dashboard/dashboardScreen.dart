@@ -10,6 +10,7 @@ import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/helper/helperFunctions.dart';
 import 'package:oromoco/services/auth.dart';
 import 'package:oromoco/services/database.dart';
+import 'package:oromoco/views/authetication/loadingScreen.dart';
 import 'package:oromoco/views/dashboard/chatRoomScreen.dart';
 import 'package:oromoco/views/dashboard/chatScreen.dart';
 import 'package:oromoco/views/dashboard/homeScreen.dart';
@@ -105,7 +106,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // });
 
     selectedBarIndex = widget.index;
-    onUpdateUserToken("1234");
+    onUpdateUserToken("");
 
     // _firebaseMessaging.configure(
     //   onMessage: (Map<String, dynamic> message) async {
@@ -276,6 +277,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(context, MaterialPageRoute(builder: (context) => MainPage()));
+                  },
+                ),
+                ListTile(
+                  title: Text(
+                    'Tải dữ liệu',
+                    style: Theme.of(context).textTheme.headline6
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoadingScreen()));
                   },
                 ),
                 ListTile(

@@ -1,3 +1,5 @@
+import 'package:oromoco/hardware/hardwareWidget.dart';
+
 class Constants{
   static String username = "";
   static String adminAlias = "@wearevulcan.com";
@@ -10,4 +12,5 @@ class Constants{
   };
   static String firebaseUID = "";
   static String userID = "";
+  static List<PerHardware> hardwareList = [];
 }

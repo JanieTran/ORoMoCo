@@ -1,13 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:oromoco/hardware/batteryWidget.dart';
+import 'package:oromoco/hardware/hardwareDetailScreen.dart';
 import 'package:oromoco/widgets/components.dart';
 
 class PerHardware{
   final PerBattery perBattery;
+  final String hadrwareID;
+  final String bluetoothID;
+  final String lastSyncDate;
+  final String address;
+  final bool bluetoothSupport;
   final String name;
-  String status;
+  final String version;
+  String status = "tắt";
 
-  PerHardware(this.name, this.perBattery);
+  PerHardware(
+    {
+      @required this.name, 
+      @required this.perBattery,
+      @required this.hadrwareID,
+      @required this.bluetoothID,
+      @required this.lastSyncDate,
+      @required this.address,
+      @required this.bluetoothSupport,
+      @required this.version
+    }
+  );
+
+  String getLastSyncDate(){
+    return DateTime.now().toLocal().difference(DateTime.fromMillisecondsSinceEpoch(int.parse(lastSyncDate)).toLocal()).inDays.toString();
+  }
+
+  String getStatus(){
+    return status;
+  }
 }
 
 class HardwareCardTile extends StatelessWidget {
@@ -32,12 +58,11 @@ class HardwareCardTile extends StatelessWidget {
         ),
         padding: EdgeInsets.all(0),
         onPressed: () async {
-          print("hello");
-          // await Navigator.push(
-          //   context,
-          //   MaterialPageRoute(
-          //       builder: (context) =>
-          //           PrivateFundDetailScreen(perContract)));
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    HardwareDetailScreen(perHardware: perHardware)));
         },
         child: Container(
           width: MediaQuery.of(context).size.width < 400 ? 400 : MediaQuery.of(context).size.width,
@@ -85,13 +110,13 @@ class HardwareCardTile extends StatelessWidget {
                     top: 8, 
                     right: 18,
                     child: Container(
-                      width: 80,
+                      width: 85,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Container(
-                            width: 80,
+                            width: 85,
                             padding: EdgeInsets.symmetric(
                               vertical: 4,
                               horizontal: 4
@@ -108,13 +133,13 @@ class HardwareCardTile extends StatelessWidget {
                               color: Color(0xFF707070)
                             ),
                             child: Text(
-                              "test",
+                              "Ngày cần tải",
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 10)
                             )
                           ),
                           Container(
-                            width: 80,
+                            width: 85,
                             padding: EdgeInsets.symmetric(
                               vertical: 4,
                               horizontal: 15
@@ -130,7 +155,7 @@ class HardwareCardTile extends StatelessWidget {
                               color: Colors.white
                             ),
                             child: Text(
-                              "1",
+                              perHardware.getLastSyncDate(),
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.headline6.copyWith(color: Color(0xFF707070))
                             )
@@ -176,7 +201,7 @@ class HardwareCardTile extends StatelessWidget {
                               text: "Trạng thái: "
                             ),
                             TextSpan(
-                              text: "bật",
+                              text: perHardware.getStatus(),
                               style: Theme.of(context).textTheme.headline5.copyWith(color: Color(0xFF1A9156))
                             )
                           ]
@@ -190,7 +215,7 @@ class HardwareCardTile extends StatelessWidget {
                             flex: 3,
                             child: Stack(
                               children: [
-                                DonutPieChart.setData(used: (double.parse(perHardware.perBattery.percentage) * 100).round(), left: 100 - (double.parse(perHardware.perBattery.percentage) * 100).round(), payment: false),
+                                DonutPieChart.setData(used: 100 - (double.parse(perHardware.perBattery.percentage) * 100).round(), left: (double.parse(perHardware.perBattery.percentage) * 100).round(), doubleLayer: false),
                                 // DonutPieChart.setData(paid: int.parse(perContract.getTotalPaid().replaceAll(",", "")), debt: int.parse(perContract.getTotalDebt().replaceAll(",", "")), payment: true)
                               ]
                             ),
@@ -206,15 +231,15 @@ class HardwareCardTile extends StatelessWidget {
                                     color: Color(0xFF707070),
                                     iconItem: "battery.svg",
                                     dimension: 20,
-                                    title: "Parameter",
-                                    amount: "info"
+                                    title: "Pin",
+                                    amount: (double.parse(perHardware.perBattery.percentage) * 100.0).toString() + "%"
                                   ),
                                   InfoItem(
                                     color: Color(0xFF707070),
-                                    iconItem: "mo-rong.svg",
+                                    iconItem: "wifi.svg",
                                     dimension: 20,
-                                    title: "Parameter",
-                                    amount: "info"
+                                    title: "Kết nối",
+                                    amount: "Off"
                                   )
                                 ]
                               ), 

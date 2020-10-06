@@ -242,7 +242,7 @@ class _MainPage extends State<MainPage> {
             ),
             ListTile(
               title: RaisedButton(
-                child: const Text('Kết nối để sử dụng'),
+                child: const Text('Kết nối để kiểm tra'),
                 onPressed: () async {
                   final BluetoothDevice selectedDevice =
                       await Navigator.of(context).push(

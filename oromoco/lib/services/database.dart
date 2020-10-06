@@ -20,6 +20,27 @@ class DatabaseMethods{
     return Firestore.instance.collection("users").add(userMap);
   }
 
+  Future<QuerySnapshot> getUserHardware(String userID) async {
+    return await Firestore.instance
+        .collection("users")
+        .document(userID)
+        .collection("hardware")
+        .getDocuments();
+  }
+
+  Future<QuerySnapshot> getAllHardware() async {
+    return await Firestore.instance
+        .collection("hardware")
+        .getDocuments();
+  }
+
+    Future<QuerySnapshot> getHardwareDatasheet(String hardwareID) async {
+    return await Firestore.instance
+        .collection("hardware")
+        .where("hardwareID", isEqualTo: hardwareID)
+        .getDocuments();
+  }
+
   addConversationMessage(String chatRoomID, messageMap) {
     Firestore.instance
         .collection("chatRoom")
@@ -104,5 +125,15 @@ class DatabaseMethods{
         .collection("chatRoom")
         .where("users", arrayContains: username)
         .snapshots();
+  }
+  
+  getLatestMessage(String chatRoomID) async {
+    return await Firestore.instance
+        .collection("chatRoom")
+        .document(chatRoomID)
+        .collection("chats")
+        .orderBy("time", descending: true)
+        .limit(1)
+        .getDocuments();
   }
 }

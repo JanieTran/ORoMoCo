@@ -12,32 +12,34 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<PerHardware> _hardwareList = [
-    new PerHardware(
-      "Vulcan's Mk10",
-      new PerBattery(
-        id: "1001",
-        type: "LiPo",
-        capacity: "2400mAh"
-      ),
-    ),
-     new PerHardware(
-      "Vulcan's sensor",
-      new PerBattery(
-        id: "1002",
-        type: "LiPo",
-        capacity: "2400mAh"
-      ),
-    ),
-     new PerHardware(
-      "Insole",
-      new PerBattery(
-        id: "1003",
-        type: "LiPo",
-        capacity: "2400mAh"
-      ),
-    )
-  ];
+  // List<PerHardware> _hardwareList = [
+  //   new PerHardware(
+  //     "Vulcan's Mk10",
+  //     new PerBattery(
+  //       id: "1001",
+  //       type: "LiPo",
+  //       capacity: "2400mAh"
+  //     ),
+  //   ),
+  //    new PerHardware(
+  //     "Vulcan's sensor",
+  //     new PerBattery(
+  //       id: "1002",
+  //       type: "LiPo",
+  //       capacity: "2400mAh"
+  //     ),
+  //   ),
+  //    new PerHardware(
+  //     "Insole",
+  //     new PerBattery(
+  //       id: "1003",
+  //       type: "LiPo",
+  //       capacity: "2400mAh"
+  //     ),
+  //   )
+  // ];
+
+  List<PerHardware> _hardwareList = Constants.hardwareList;
 
   @override
   Widget build(BuildContext context) {

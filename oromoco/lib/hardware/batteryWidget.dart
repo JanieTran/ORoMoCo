@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
 class PerBattery{
-  @required final String id;
   @required final String type;
   @required final String capacity;
   String percentage = "0.1";
 
   PerBattery({
-    this.id = "",
     this.type = "",
     this.capacity = ""
   });
@@ -35,9 +33,9 @@ class DonutPieChart extends StatelessWidget {
   DonutPieChart(this.seriesList, {this.animate});
 
   /// Creates a [PieChart] with sample data and no transition.
-  factory DonutPieChart.setData({int used, int left, bool payment}) {
+  factory DonutPieChart.setData({int used, int left, bool doubleLayer}) {
     return new DonutPieChart(
-      _createData(used, left, payment),
+      _createData(used, left),
       // Disable animations for image tests.
       animate: false,
     );
@@ -57,10 +55,10 @@ class DonutPieChart extends StatelessWidget {
   }
 
   /// Create one series with sample hard coded data.
-  static List<charts.Series<ChartItem, String>> _createData(int paid, int debt, bool payment) {
+  static List<charts.Series<ChartItem, String>> _createData(int used, int left) {
     final data = [
-      new ChartItem("used", paid, payment ? charts.MaterialPalette.green.shadeDefault.darker : charts.MaterialPalette.yellow.shadeDefault.darker),
-      new ChartItem("left", debt, payment ? charts.MaterialPalette.transparent : charts.MaterialPalette.gray.shadeDefault.darker),
+      new ChartItem("used", used, charts.MaterialPalette.gray.shadeDefault.darker),
+      new ChartItem("left", left, charts.MaterialPalette.yellow.shadeDefault.darker),
     ];
 
     return [
