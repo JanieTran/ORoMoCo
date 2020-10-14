@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:oromoco/helper/constants.dart';
-import 'package:oromoco/widgets/components.dart';
 
 class UserMainInfoCard extends StatelessWidget {
   const UserMainInfoCard({Key key}) : super(key: key);
@@ -13,12 +12,11 @@ class UserMainInfoCard extends StatelessWidget {
         Stack(
           children: [
             Container(
-              height: 260,
-              // height: 250,
+              height: 180,
               color: Color(0xFF083279),
             ),
             Positioned(
-              top: 223,
+              top: 140,
               left: 0,
               right: 0,
               child: Container(
@@ -36,7 +34,7 @@ class UserMainInfoCard extends StatelessWidget {
         ),
         Container(
           width: double.infinity,
-          height: 223.0,
+          height: 140,
           padding: const EdgeInsets.all(18.0),
           margin: const EdgeInsets.symmetric(horizontal: 26.0),
           decoration: BoxDecoration(
@@ -65,38 +63,6 @@ class UserMainInfoCard extends StatelessWidget {
                       color: Colors.amber,
                     ),
                   ),
-                ],
-              ),
-              new Column(
-                children: [
-                  new Row(
-                    children: [
-                      new InfoItem(
-                        color: Colors.white,
-                        iconItem: "tag.svg",
-                        dimension: 18,
-                        title: "----",
-                        amount: "---"),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  new Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      new InfoItem(
-                        color: Colors.white,
-                        iconItem: "tag.svg",
-                        dimension: 20,
-                        title: "----",
-                        amount: "---"),
-                      new InfoItem(
-                          color: Colors.white,
-                          iconItem: "tag.svg",
-                          dimension: 20,
-                          title: "----",
-                          amount: "---"),
-                    ],
-                  )
                 ],
               ),
             ],

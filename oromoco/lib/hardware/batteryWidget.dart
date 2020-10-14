@@ -80,3 +80,127 @@ class ChartItem {
 
   ChartItem(this.segment, this.amount, this.color);
 }
+
+class StackedAreaLineChart extends StatelessWidget {
+  final List<charts.Series> seriesList;
+  final bool animate;
+
+  StackedAreaLineChart(this.seriesList, {this.animate});
+
+  /// Creates a [LineChart] with sample data and no transition.
+  factory StackedAreaLineChart.idealDataPlot() {
+    return new StackedAreaLineChart(
+      _idealData(),
+      // Disable animations for image tests.
+      animate: false,
+    );
+  }
+
+  factory StackedAreaLineChart.sampleActualDataPlot() {
+    return new StackedAreaLineChart(
+      _sampleActualData(),
+      // Disable animations for image tests.
+      animate: false,
+    );
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return new charts.LineChart(seriesList,
+        defaultRenderer:
+            new charts.LineRendererConfig(includeArea: true, stacked: true),
+        animate: animate);
+  }
+
+  /// Create one series with sample hard coded data.
+  static List<charts.Series<BatteryLevel, int>> _idealData() {
+    final idealLifeData = [
+      new BatteryLevel(0, 100),
+      new BatteryLevel(10, 99),
+      new BatteryLevel(20, 98),
+      new BatteryLevel(30, 97),
+      new BatteryLevel(40, 96),
+      new BatteryLevel(50, 94),
+      new BatteryLevel(60, 92),
+      new BatteryLevel(70, 90),
+      new BatteryLevel(80, 87),
+      new BatteryLevel(90, 84),
+      new BatteryLevel(100, 80),
+      new BatteryLevel(110, 76),
+      new BatteryLevel(120, 72),
+      new BatteryLevel(130, 67),
+      new BatteryLevel(140, 62),
+      new BatteryLevel(150, 56),
+      new BatteryLevel(160, 50),
+      new BatteryLevel(170, 43),
+      new BatteryLevel(180, 36),
+      new BatteryLevel(190, 29),
+      new BatteryLevel(200, 21),
+      new BatteryLevel(210, 13),
+      new BatteryLevel(220, 8),
+      new BatteryLevel(230, 2),
+      new BatteryLevel(240, 0),
+      new BatteryLevel(250, 0),
+    ];
+
+    return [
+      new charts.Series<BatteryLevel, int>(
+        id: 'data',
+        colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault,
+        domainFn: (BatteryLevel battery, _) => battery.tenthMinute,
+        measureFn: (BatteryLevel battery, _) => battery.percentage,
+        data: idealLifeData,
+      )
+    ];
+  }
+
+  static List<charts.Series<BatteryLevel, int>> _sampleActualData() {
+    final actualLifeData = [
+      new BatteryLevel(0, 100),
+      new BatteryLevel(10, 98),
+      new BatteryLevel(20, 97),
+      new BatteryLevel(30, 96),
+      new BatteryLevel(40, 95),
+      new BatteryLevel(50, 93),
+      new BatteryLevel(60, 90),
+      new BatteryLevel(70, 88),
+      new BatteryLevel(80, 85),
+      new BatteryLevel(90, 82),
+      new BatteryLevel(100, 78),
+      new BatteryLevel(110, 73),
+      new BatteryLevel(120, 68),
+      new BatteryLevel(130, 63),
+      new BatteryLevel(140, 58),
+      new BatteryLevel(150, 52),
+      new BatteryLevel(160, 45),
+      new BatteryLevel(170, 38),
+      new BatteryLevel(180, 31),
+      new BatteryLevel(190, 24),
+      new BatteryLevel(200, 15),
+      new BatteryLevel(210, 6),
+      new BatteryLevel(220, 2),
+      new BatteryLevel(230, 0),
+      new BatteryLevel(240, 0),
+      new BatteryLevel(250, 0),
+    ];
+
+    return [
+      new charts.Series<BatteryLevel, int>(
+        id: 'data',
+        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        domainFn: (BatteryLevel battery, _) => battery.tenthMinute,
+        measureFn: (BatteryLevel battery, _) => battery.percentage,
+        data: actualLifeData,
+      )
+    ];
+  }
+}
+
+/// Sample linear data type.
+class BatteryLevel {
+  final int tenthMinute;
+  final int percentage;
+
+  BatteryLevel(this.tenthMinute, this.percentage);
+}

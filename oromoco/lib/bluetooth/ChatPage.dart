@@ -113,27 +113,29 @@ class _ChatPage extends State<ChatPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10)
                           ),
-                          buttonColor: currentCommand == i ? Theme.of(context).primaryColor: Color(0xFFF0F0F0),
+                          buttonColor: Color(0xFFF0F0F0),
                           child: RaisedButton(
                             child: Text(
                               _defaultCommand[i].function,
                               style: Theme.of(context).textTheme.headline6.copyWith(
-                                color: currentCommand == i ? Colors.white : Colors.black,
+                                color: Colors.black,
                                 fontWeight: FontWeight.normal
                               ),
                             ),
                             onPressed: (){
                               _sendMessage(_defaultCommand[i].command, defaultCommand: true);
-                              if(currentCommand == i){
-                                setState(() {
-                                  currentCommand = -1;
-                                });
-                                currentCommand = -1;
-                              } else{
-                                setState(() {
-                                  currentCommand = i;
-                                });
-                              }
+                              // if(currentCommand == i){
+                              //   setState(() {
+                              //     currentCommand = -1;
+                              //   });
+                              // } else{
+                              //   setState(() {
+                              //     currentCommand = i;
+                              //   });
+                              // }
+                              setState(() {
+                                currentCommand = i;
+                              });
                             },
                           ),
                         ),
@@ -201,18 +203,22 @@ class _ChatPage extends State<ChatPage> {
     return Scaffold(
       appBar: AppBar(
           title: (isConnecting
-              ? Text('Kết nối với ' + widget.server.name + '...')
+              ? Text('Kết nối với ' + widget.server.name + '...',
+                style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white))
               : isConnected
-                  ? Text('Trò chuyện cùng ' + widget.server.name)
-                  : Text('Chat log with ' + widget.server.name))),
+                  ? Text('Gỡ lỗi ' + widget.server.name,
+                style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white))
+                  : Text('Lịch sử tương tác với ' + widget.server.name,
+                style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white)))),
       body: SafeArea(
         child: Column(
           children: <Widget>[
             Flexible(
               child: ListView(
-                  padding: const EdgeInsets.all(12.0),
-                  controller: listScrollController,
-                  children: list),
+                padding: const EdgeInsets.all(12.0),
+                controller: listScrollController,
+                children: list
+              ),
             ),
             _horizontalButtonList(BluetoothDefaultCommand.defaultCommandList),
             Row(
@@ -290,6 +296,16 @@ class _ChatPage extends State<ChatPage> {
                 : _messageBuffer + dataString.substring(0, index),
           ),
         );
+        
+        // String data = backspacesCounter > 0
+        //         ? _messageBuffer.substring(
+        //             0, _messageBuffer.length - backspacesCounter)
+        //         : _messageBuffer + dataString.substring(0, index);
+
+        // for(int i = 0; i < data.length; i++){
+        //   print(int.parse(data[i]));
+        // }
+
         _messageBuffer = dataString.substring(index);
       });
     } else {
@@ -298,6 +314,13 @@ class _ChatPage extends State<ChatPage> {
               0, _messageBuffer.length - backspacesCounter)
           : _messageBuffer + dataString);
     }
+
+    Future.delayed(Duration(milliseconds: 100)).then((_) {
+      listScrollController.animateTo(
+          listScrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 100),
+          curve: Curves.easeOut);
+    });
   }
 
   void _sendMessage(String text, {bool defaultCommand = false}) async {
@@ -315,10 +338,10 @@ class _ChatPage extends State<ChatPage> {
           });
         }
 
-        Future.delayed(Duration(milliseconds: 333)).then((_) {
+        Future.delayed(Duration(milliseconds: 100)).then((_) {
           listScrollController.animateTo(
               listScrollController.position.maxScrollExtent,
-              duration: Duration(milliseconds: 333),
+              duration: Duration(milliseconds: 100),
               curve: Curves.easeOut);
         });
       } catch (e) {

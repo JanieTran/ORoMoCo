@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oromoco/bluetooth/ChatPage.dart';
 import 'package:oromoco/bluetooth/SelectBondedDevicePage.dart';
 import 'package:oromoco/hardware/batteryWidget.dart';
 import 'package:oromoco/hardware/hardwareWidget.dart';
 import 'package:intl/intl.dart';
+import 'package:oromoco/hardware/userConfiguration.dart';
 import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/services/database.dart';
 
@@ -262,7 +264,8 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
         ),
         SizedBox(height: 12),
         Container(
-            child: Column(children: [
+          child: Column(
+            children: [
               SizedBox(height: 12),
               textBuilder("full", "Mã sản phẩm", widget.perHardware.hadrwareID),
               SizedBox(height: 2),
@@ -272,7 +275,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
               SizedBox(height: 2),
               textBuilder("full", "Hỗ trợ Bluetooth", widget.perHardware.bluetoothSupport ? "Có" : "Không"),
               widget.perHardware.bluetoothSupport ? SizedBox(height: 2):Container(),
-              widget.perHardware.bluetoothSupport ? doubleTextBuilder("full", "Mã Bluetooth", widget.perHardware.bluetoothID, "Trạng thái", "Ngắt kết nối", "Thông tin Bluetooth"):Container(),
+              widget.perHardware.bluetoothSupport ? doubleTextBuilder("full", "Mã Bluetooth", widget.perHardware.bluetoothID, "Trạng thái", widget.perHardware.isConnectedTo() ? "Kết nối" : "Ngắt kết nối", "Thông tin Bluetooth"):Container(),
               SizedBox(height: 24),
               Container(
                 alignment: Alignment.centerLeft,
@@ -412,7 +415,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
                   ),
                   Container(
                     height: 50,
-                    color: Color(0xFF09764C),
+                    color: widget.perHardware.isConnectedTo() ? Color(0xFF09764C) : Colors.red.withOpacity(0.8),
                     width: MediaQuery.of(context).size.width,
                       padding: EdgeInsets.symmetric(horizontal: 26),
                       child: Row(
@@ -433,7 +436,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
                                 Flexible(
                                   flex: 1,
                                   child: Text(
-                                    widget.perHardware.status,
+                                    widget.perHardware.isConnectedTo() ? "bật" : "tắt",
                                     textAlign: TextAlign.right,
                                     style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white)
                                   )
@@ -495,7 +498,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
               ),
             ),
           ),
-          bottomNavigationBar: Container(
+          bottomNavigationBar: widget.perHardware.bluetoothSupport ? Container(
             decoration: BoxDecoration(
               color: Color(0xFFF5F5F5), 
               // boxShadow: [
@@ -510,6 +513,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
               children: <Widget>[
                 SizedBox(width: 10),
                 Expanded(
+                  flex: 2,
                   child: ButtonTheme(
                     height: 50,
                     child: RaisedButton(
@@ -522,11 +526,11 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
                         'Kết nối',
                         style: Theme.of(context)
                             .textTheme
-                            .headline6.copyWith(fontWeight: FontWeight.bold, color: Color(0xFF09764C)),
+                            .headline6.copyWith(fontWeight: FontWeight.bold, 
+                            color: Color(0xFF09764C)),
                       ),
                       onPressed: () async {
-                        final BluetoothDevice selectedDevice =
-                            await Navigator.of(context).push(
+                        final BluetoothDevice selectedDevice = await Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) {
                               return SelectBondedDevicePage(checkAvailability: false, address: widget.perHardware.bluetoothID);
@@ -536,22 +540,23 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
 
                         if (selectedDevice != null) {
                           print('Connect -> selected ' + selectedDevice.address);
-                          Navigator.of(context).push(
+                          await Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) {
-                                return ChatPage(server: selectedDevice);
+                                return UserConfigurationScreen(perHardware: widget.perHardware, server: selectedDevice);
                               },
                             ),
                           );
+                          setState(() {});
                         } else {
                           print('Connect -> no device selected');
                         }
-                      },
-                    ),
+                      }),
                   ),
                 ),
                 SizedBox(width: 10),
                 Expanded(
+                  flex: 1,
                   child: ButtonTheme(
                     height: 50,
                     child: RaisedButton(
@@ -561,21 +566,49 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
                       elevation: 1,
                       color: Colors.white,
                       child: Text(
-                        'Cài đặt',
+                        'Gỡ lỗi',
                         style: Theme.of(context)
                             .textTheme
-                            .headline6.copyWith(fontWeight: FontWeight.bold, 
-                            color: Color(0xFF09764C)),
+                            .headline6.copyWith(fontWeight: FontWeight.bold, color: Color(0xFF09764C)),
                       ),
-                      onPressed: (){
-                         print("configure");
-                      }),
+                      onPressed: () async {
+                        if(widget.perHardware.isConnectedTo()){
+                          widget.perHardware.disconnect();
+                        }
+
+                        if(widget.perHardware.isDisconnected()){
+                          final BluetoothDevice selectedDevice = await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return SelectBondedDevicePage(checkAvailability: false, address: widget.perHardware.bluetoothID);
+                              },
+                            ),
+                          );
+
+                          if (selectedDevice != null) {
+                            print('Connect -> selected ' + selectedDevice.address);
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return ChatPage(server: selectedDevice);
+                                },
+                              ),
+                            );
+                            setState(() {});
+                          } else {
+                            print('Connect -> no device selected');
+                          }
+                        } else{
+                          Fluttertoast.showToast(msg: "Hệ thống đang không thể xử lý, xin thử lại sau");
+                        }
+                      },
+                    ),
                   ),
                 ),
                 SizedBox(width: 10),
               ],
             )
-          ),
+          ) : null,
         ),
       ),
     );

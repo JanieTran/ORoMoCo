@@ -79,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (_, i) => Container(
                             width: MediaQuery.of(context).size.width < 400 ? 400 : MediaQuery.of(context).size.width,
-                            child: HardwareCardTile(_list[i], homePage: true)
+                            child: type == "product" ? HardwareCardTile(_list[i], homePage: true) : AccessoryCardTile(_list[i], homePage: true)
                           ),
                         )
                       : Container(
@@ -124,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
         "Sản phẩm của tôi",
         _hardwareList,
         "tool-list-on-board.svg", 
-        type: "line"),
+        type: "product"),
       GestureDetector(
         onTap: (){
           Navigator.pushReplacement(
@@ -154,7 +154,18 @@ class _HomeScreenState extends State<HomeScreen> {
           )
         ),
       ),
-      SizedBox(height: 40)
+      SizedBox(height: 40),
+      _horizontalListView(
+        "Phụ kiện của tôi",
+        [
+          new PerHardware(name: "Đế sạc thông minh", perBattery: new PerBattery(), hadrwareID: "A001", bluetoothID: "", lastSyncDate: DateTime.now().millisecondsSinceEpoch.toString(), address: "", bluetoothSupport: false, version: "Mk2.5", logDocumentID: ""),
+          new PerHardware(name: "Dụng cụ hỗ trợ", perBattery: new PerBattery(), hadrwareID: "A001", bluetoothID: "", lastSyncDate: DateTime.now().millisecondsSinceEpoch.toString(), address: "", bluetoothSupport: false, version: "Mk2.5", logDocumentID: ""),
+          new PerHardware(name: "Dụng cụ hỗ trợ", perBattery: new PerBattery(), hadrwareID: "A001", bluetoothID: "", lastSyncDate: DateTime.now().millisecondsSinceEpoch.toString(), address: "", bluetoothSupport: false, version: "Mk2.5", logDocumentID: ""),
+          new PerHardware(name: "Dụng cụ hỗ trợ", perBattery: new PerBattery(), hadrwareID: "A001", bluetoothID: "", lastSyncDate: DateTime.now().millisecondsSinceEpoch.toString(), address: "", bluetoothSupport: false, version: "Mk2.5", logDocumentID: "")
+        ],
+        "tool-list-on-board.svg", 
+        type: "accessory"),
+      SizedBox(height: 40),
     ];
 
     return Scaffold(
