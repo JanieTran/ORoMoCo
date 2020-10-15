@@ -31,15 +31,17 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
   bool isConfigured = false;
   Timer periodicBluetooth;
   Timer fakeData;
+  Timer childInit;
 
   NumericComboLinePointChart numericComboLinePointChart;
   HorizontalBarLabelCustomChart horizontalBarLabelCustomChart;
   DonutPieChart batteryDonut;
   DonutPieChart angleDonut;
 
-  final keyLineChart = GlobalKey<NumericComboLinePointChartState>();
-  final keyHorizontalBar = GlobalKey<HorizontalBarLabelCustomChartState>();
-  final keyAngleDonut = GlobalKey<DonutPieChartState>();
+  final _keyLineChart = GlobalKey<NumericComboLinePointChartState>();
+  final _keyHorizontalBar = GlobalKey<HorizontalBarLabelCustomChartState>();
+  final _keyAngleDonut = GlobalKey<DonutPieChartState>();
+  final _keyBatteryDonut = GlobalKey<DonutPieChartState>();
 
   /*
   FAKE DATA
@@ -52,13 +54,24 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
   void initState() {
     super.initState(); 
 
-    numericComboLinePointChart = new NumericComboLinePointChart(key: keyLineChart);
-    horizontalBarLabelCustomChart = new HorizontalBarLabelCustomChart(key: keyHorizontalBar);
-    angleDonut = new DonutPieChart(key: keyAngleDonut);
+    numericComboLinePointChart = new NumericComboLinePointChart(key: _keyLineChart);
+    horizontalBarLabelCustomChart = new HorizontalBarLabelCustomChart(key: _keyHorizontalBar);
+    angleDonut = new DonutPieChart(key: _keyAngleDonut);
     // angleDonut = new DonutPieChart(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), 
     //   left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round());
-    batteryDonut = new DonutPieChart(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), 
-      left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round());
+    batteryDonut = new DonutPieChart(key: _keyBatteryDonut);
+    childInit = Timer.periodic(Duration(milliseconds: 100), (Timer t) {
+      try{
+        if(_keyBatteryDonut.currentState != null){
+          _keyBatteryDonut.currentState.setData(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round());
+          childInit.cancel();
+        } else{
+          setState(() {});
+        }
+      } catch(e){
+        childInit.cancel();
+      }
+    });
 
     rfSignalPercentage = 85;
     bluetoothSignalPercentage = 85;
@@ -108,7 +121,7 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                 currentMessageInBuffer = widget.perHardware.messageBuffer();
                 if(currentMessageInBuffer.initialized && oldPackage.angle != currentMessageInBuffer.angle){
                   try{
-                    keyAngleDonut.currentState.setData(
+                    _keyAngleDonut.currentState.setData(
                       used: currentMessageInBuffer.getAngle(), 
                       left: 180 - currentMessageInBuffer.getAngle()
                     );
@@ -133,12 +146,12 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                 rfSignalPercentage = 85 + randomValue;
                 randomValue = _random.nextInt(10);
                 bluetoothSignalPercentage = 85 + randomValue;
-                keyLineChart.currentState.setData(
+                _keyLineChart.currentState.setData(
                   rfPercentage: rfSignalPercentage, 
                   bluetoothPercentage: bluetoothSignalPercentage
                 );
 
-                keyHorizontalBar.currentState.setData(
+                _keyHorizontalBar.currentState.setData(
                   rfPercentage: rfSignalPercentage,
                   bluetoothPercentage: bluetoothSignalPercentage
                 );

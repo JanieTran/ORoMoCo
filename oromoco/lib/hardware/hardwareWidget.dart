@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -190,12 +191,26 @@ class HardwareCardTile extends StatefulWidget {
 
 class _HardwareCardTileState extends State<HardwareCardTile> {
   DonutPieChart donutPieChart;
+  final _keyBatteryChart = GlobalKey<DonutPieChartState>();
+  Timer childInit;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    donutPieChart = new DonutPieChart(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round());
+    donutPieChart = new DonutPieChart(key: _keyBatteryChart);
+    childInit = Timer.periodic(Duration(milliseconds: 100), (Timer t) {
+      try{
+        if(_keyBatteryChart.currentState != null){
+          _keyBatteryChart.currentState.setData(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round());
+          childInit.cancel();
+        } else{
+          setState(() {});
+        }
+      } catch(e){
+        childInit.cancel();
+      }
+    });
   }
 
   @override

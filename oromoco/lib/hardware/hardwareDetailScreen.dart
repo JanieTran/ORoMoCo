@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -26,6 +28,8 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
   int messageLimit = 20;
   ScrollController _scrollController = new ScrollController();
   DonutPieChart donutPieChart;
+  final _keyBatteryChart = GlobalKey<DonutPieChartState>();
+  Timer childInit;
 
   Widget logTerminal(){
     return Container(
@@ -61,7 +65,20 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
   @override
   void initState() {
     super.initState();
-    donutPieChart = new DonutPieChart(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round());
+    donutPieChart = new DonutPieChart(key: _keyBatteryChart);
+    childInit = Timer.periodic(Duration(milliseconds: 100), (Timer t) {
+      try{
+        if(_keyBatteryChart.currentState != null){
+          _keyBatteryChart.currentState.setData(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round());
+          childInit.cancel();
+        } else{
+          setState(() {});
+        }
+      } catch(e){
+        childInit.cancel();
+      }
+    });
+    
     DatabaseMethods().getHardwareLog(Constants.firebaseUID, widget.perHardware.logDocumentID, messageLimit).then((value) {
       setState(() {
         hardwareLogStream = value;

@@ -30,10 +30,8 @@ class DonutPieChart extends StatefulWidget {
   List<charts.Series> seriesList;
   bool animate;
   bool darkMode;
-  int used;
-  int left;
 
-  DonutPieChart({this.used, this.left, this.seriesList, this.animate = false, this.darkMode = false, Key key}):super(key: key);
+  DonutPieChart({this.seriesList, this.animate = false, this.darkMode = false, Key key}):super(key: key);
 
   @override
   DonutPieChartState createState() => DonutPieChartState();
@@ -45,19 +43,10 @@ class DonutPieChartState extends State<DonutPieChart> {
   void initState() {
     super.initState();
 
-    List<ChartItem> data;
-
-    if(widget.used != null && widget.left != null){
-      data = [
-        new ChartItem("used", widget.used, charts.Color.fromHex(code: '#7D7D7D')),
-        new ChartItem("left", widget.left, charts.Color.fromHex(code: widget.darkMode ? '#39C721' : '#09764C')),
-      ];
-    } else{
-      data = [
-        new ChartItem("used", 0, charts.Color.fromHex(code: '#7D7D7D')),
-        new ChartItem("left", 100, charts.Color.fromHex(code: widget.darkMode ? '#39C721' : '#09764C')),
-      ];
-    }
+    final data = [
+      new ChartItem("used", 0, charts.Color.fromHex(code: '#7D7D7D')),
+      new ChartItem("left", 0, charts.Color.fromHex(code: widget.darkMode ? '#39C721' : '#09764C')),
+    ];
 
     List<charts.Series<ChartItem, String>> newData = [
       new charts.Series<ChartItem, String>(
