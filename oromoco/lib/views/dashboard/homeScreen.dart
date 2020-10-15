@@ -12,33 +12,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // List<PerHardware> _hardwareList = [
-  //   new PerHardware(
-  //     "Vulcan's Mk10",
-  //     new PerBattery(
-  //       id: "1001",
-  //       type: "LiPo",
-  //       capacity: "2400mAh"
-  //     ),
-  //   ),
-  //    new PerHardware(
-  //     "Vulcan's sensor",
-  //     new PerBattery(
-  //       id: "1002",
-  //       type: "LiPo",
-  //       capacity: "2400mAh"
-  //     ),
-  //   ),
-  //    new PerHardware(
-  //     "Insole",
-  //     new PerBattery(
-  //       id: "1003",
-  //       type: "LiPo",
-  //       capacity: "2400mAh"
-  //     ),
-  //   )
-  // ];
-
   List<PerHardware> _hardwareList = Constants.hardwareList;
 
   @override
@@ -79,7 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (_, i) => Container(
                             width: MediaQuery.of(context).size.width < 400 ? 400 : MediaQuery.of(context).size.width,
-                            child: type == "product" ? HardwareCardTile(_list[i], homePage: true) : AccessoryCardTile(_list[i], homePage: true)
+                            child: type == "product" ? HardwareCardTile(_list[i], homePage: true, key: UniqueKey()) : AccessoryCardTile(_list[i], homePage: true)
                           ),
                         )
                       : Container(

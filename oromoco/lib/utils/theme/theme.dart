@@ -20,7 +20,11 @@ class AppSizes {
 
 class AppColors {
   // static const blue = Color(0xFF083276);
-  static const blue = Color(0xFF243665);
+  static const blue = Color(0xFF00003F); // Vulcan's blue
+  static const black = Color(0xFF120F10);
+  static const orange = Color(0xFFF69322);
+  static const amber = Color(0xFFFFECC2);
+  static const grey = Color(0xFFEBEBEB);
 }
 
 class AppConsts {
@@ -30,8 +34,10 @@ class AppConsts {
 class ORoMoCoTheme {
   static final theme = ThemeData(
     // primarySwatch: Colors.indigo,
-    primaryColor: const Color(0xFF243665),
-    accentColor: const Color(0xFF8BD8BD),
+    // primaryColor: const Color(0xFF243665),
+    primaryColor: Color(0xFFF69322),
+    // accentColor: const Color(0xFF8BD8BD),
+    accentColor: Color(0xFF120F10),
     errorColor: Colors.red,
     fontFamily: 'Livvic',
     textTheme: ThemeData.light().textTheme.copyWith(

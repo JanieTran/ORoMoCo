@@ -26,42 +26,40 @@ class _BatteryWidgetState extends State<BatteryWidget> {
   }
 }
 
-class DonutPieChart extends StatelessWidget {
-  final List<charts.Series> seriesList;
-  final bool animate;
+class DonutPieChart extends StatefulWidget {
+  List<charts.Series> seriesList;
+  bool animate;
+  bool darkMode;
+  int used;
+  int left;
 
-  DonutPieChart(this.seriesList, {this.animate});
-
-  /// Creates a [PieChart] with sample data and no transition.
-  factory DonutPieChart.setData({int used, int left, bool doubleLayer}) {
-    return new DonutPieChart(
-      _createData(used, left),
-      // Disable animations for image tests.
-      animate: false,
-    );
-  }
+  DonutPieChart({this.used, this.left, this.seriesList, this.animate = false, this.darkMode = false, Key key}):super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    return new IgnorePointer(
-      child: charts.PieChart(
-        seriesList,
-        animate: animate,
-        // Configure the width of the pie slices to 60px. The remaining space in
-        // the chart will be left as a hole in the center.
-        defaultRenderer: new charts.ArcRendererConfig(arcWidth: 25)
-      )
-    );
-  }
+  DonutPieChartState createState() => DonutPieChartState();
+}
 
-  /// Create one series with sample hard coded data.
-  static List<charts.Series<ChartItem, String>> _createData(int used, int left) {
-    final data = [
-      new ChartItem("used", used, charts.MaterialPalette.gray.shadeDefault.darker),
-      new ChartItem("left", left, charts.MaterialPalette.yellow.shadeDefault.darker),
-    ];
+class DonutPieChartState extends State<DonutPieChart> {
 
-    return [
+  @override
+  void initState() {
+    super.initState();
+
+    List<ChartItem> data;
+
+    if(widget.used != null && widget.left != null){
+      data = [
+        new ChartItem("used", widget.used, charts.Color.fromHex(code: '#7D7D7D')),
+        new ChartItem("left", widget.left, charts.Color.fromHex(code: widget.darkMode ? '#39C721' : '#09764C')),
+      ];
+    } else{
+      data = [
+        new ChartItem("used", 0, charts.Color.fromHex(code: '#7D7D7D')),
+        new ChartItem("left", 100, charts.Color.fromHex(code: widget.darkMode ? '#39C721' : '#09764C')),
+      ];
+    }
+
+    List<charts.Series<ChartItem, String>> newData = [
       new charts.Series<ChartItem, String>(
         id: 'Segment',
         domainFn: (ChartItem segment, _) => segment.segment,
@@ -70,6 +68,48 @@ class DonutPieChart extends StatelessWidget {
         data: data,
       )
     ];
+
+    widget.seriesList = newData;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new IgnorePointer(
+      child: charts.PieChart(
+        widget.seriesList,
+        animate: widget.animate,
+        // Configure the width of the pie slices to 60px. The remaining space in
+        // the chart will be left as a hole in the center.
+        defaultRenderer: new charts.ArcRendererConfig(arcWidth: 25)
+      )
+    );
+  }
+
+  void setData({int used, int left}){
+    List<ChartItem> data = [
+      new ChartItem("used", used, charts.Color.fromHex(code: '#7D7D7D')),
+      new ChartItem("left", left, charts.Color.fromHex(code: widget.darkMode ? '#39C721' : '#09764C')),
+    ];
+
+    List<charts.Series<ChartItem, String>> newData = [
+      new charts.Series<ChartItem, String>(
+        id: 'Segment',
+        domainFn: (ChartItem segment, _) => segment.segment,
+        measureFn: (ChartItem segment, _) => segment.amount,
+        colorFn: (ChartItem segment, _) => segment.color,
+        data: data,
+      )
+    ];
+
+    setState(() {
+      widget.seriesList = newData;
+    });
+  }
+
+  void setMode({@required bool isDarkMode}){
+    setState(() {
+      widget.darkMode = isDarkMode;
+    });
   }
 }
 
@@ -147,7 +187,7 @@ class StackedAreaLineChart extends StatelessWidget {
     return [
       new charts.Series<BatteryLevel, int>(
         id: 'data',
-        colorFn: (_, __) => charts.MaterialPalette.green.shadeDefault,
+        colorFn: (_, __) => charts.Color.fromHex(code: "#F69322"),
         domainFn: (BatteryLevel battery, _) => battery.tenthMinute,
         measureFn: (BatteryLevel battery, _) => battery.percentage,
         data: idealLifeData,
@@ -188,7 +228,7 @@ class StackedAreaLineChart extends StatelessWidget {
     return [
       new charts.Series<BatteryLevel, int>(
         id: 'data',
-        colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
+        colorFn: (_, __) => charts.Color.fromHex(code: '#7D7D7D'),
         domainFn: (BatteryLevel battery, _) => battery.tenthMinute,
         measureFn: (BatteryLevel battery, _) => battery.percentage,
         data: actualLifeData,

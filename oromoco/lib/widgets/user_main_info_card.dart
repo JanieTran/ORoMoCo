@@ -13,7 +13,7 @@ class UserMainInfoCard extends StatelessWidget {
           children: [
             Container(
               height: 180,
-              color: Color(0xFF083279),
+              color: Theme.of(context).primaryColor,
             ),
             Positioned(
               top: 140,
@@ -39,7 +39,7 @@ class UserMainInfoCard extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 26.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(10.0)),
-            color: Color(0xFF083279),
+            color: Colors.transparent
           ),
           child: new Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -51,16 +51,16 @@ class UserMainInfoCard extends StatelessWidget {
                   new Text(
                     'Xin chào,',
                     style: Theme.of(context).textTheme.headline5.copyWith(
-                          color: Colors.white,
+                          color: Theme.of(context).accentColor,
                           fontSize: 15,
-                          fontWeight: FontWeight.normal
+                          fontWeight: FontWeight.bold
                         ),
                   ),
                   SizedBox(height: 10),
                   new Text(
                     Constants.username,
                     style: Theme.of(context).textTheme.headline5.copyWith(
-                      color: Colors.amber,
+                      color: Colors.white,
                     ),
                   ),
                 ],
@@ -89,7 +89,7 @@ class UserMainInfoCard extends StatelessWidget {
                       ),
                     ),
                     radius: 35,
-                    backgroundColor: Color(0xFF083279),
+                    backgroundColor: Colors.grey
                   ),
                 ),
               ),

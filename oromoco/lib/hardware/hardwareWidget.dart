@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:oromoco/bluetooth/utils/utils.dart';
 import 'package:oromoco/hardware/batteryWidget.dart';
 import 'package:oromoco/hardware/hardwareDetailScreen.dart';
+import 'package:oromoco/utils/theme/theme.dart';
 import 'package:oromoco/widgets/components.dart';
 
 class _Message {
@@ -28,7 +28,7 @@ class PerHardware{
   final String logDocumentID;
   BluetoothConnection connection;
   bool isConnected;
-  String status = "tắt";
+  String status = "Tắt";
   List<_Message> messages = [];
   static final clientID = 0;
   String _messageBuffer = '';
@@ -139,7 +139,7 @@ class PerHardware{
       _Message perMessage = messages.removeAt(0);
       String value = perMessage.text.trim();
       
-      if(DateTime.now().millisecondsSinceEpoch - perMessage.timestamp < 200){
+      if(DateTime.now().millisecondsSinceEpoch - perMessage.timestamp < 100){
         try{
           // int.parse(value);
           // int.parse(value.split(',')[1]);
@@ -189,6 +189,15 @@ class HardwareCardTile extends StatefulWidget {
 }
 
 class _HardwareCardTileState extends State<HardwareCardTile> {
+  DonutPieChart donutPieChart;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    donutPieChart = new DonutPieChart(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -225,7 +234,8 @@ class _HardwareCardTileState extends State<HardwareCardTile> {
                         topLeft: Radius.circular(15),
                         topRight: Radius.circular(15)
                       ),
-                      color: Color(0xFF1A9156)
+                      // color: Color(0xFF1A9156)
+                      color: AppColors.blue
                     ),
                     padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                     child:  Row(
@@ -271,7 +281,7 @@ class _HardwareCardTileState extends State<HardwareCardTile> {
                             ),
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: Color(0xFF1A9156)
+                                color: AppColors.blue
                               ),
                               borderRadius: BorderRadius.only(
                                 topRight: Radius.circular(10),
@@ -294,7 +304,7 @@ class _HardwareCardTileState extends State<HardwareCardTile> {
                             ),
                             decoration: BoxDecoration(
                               border: Border.all(
-                                color: Color(0xFF1A9156)
+                                color: AppColors.blue
                               ),
                               borderRadius: BorderRadius.only(
                                 bottomLeft: Radius.circular(10),
@@ -323,7 +333,7 @@ class _HardwareCardTileState extends State<HardwareCardTile> {
                   Container(
                     height: 10,
                     width: (MediaQuery.of(context).size.width - 52)*double.parse(widget.perHardware.perBattery.percentage),
-                    color: Color(0xFFFEC84D)
+                    color: Theme.of(context).primaryColor
                   ),
                 ]
               ),
@@ -349,7 +359,7 @@ class _HardwareCardTileState extends State<HardwareCardTile> {
                               text: "Trạng thái: "
                             ),
                             TextSpan(
-                              text: widget.perHardware.isConnectedTo() ? "bật" : "tắt",
+                              text: widget.perHardware.isConnectedTo() ? "Bật" : "Tắt",
                               style: Theme.of(context).textTheme.headline5.copyWith(color: widget.perHardware.isConnectedTo() ? Color(0xFF1A9156) : Colors.red.withOpacity(0.8))
                             )
                           ]
@@ -363,7 +373,7 @@ class _HardwareCardTileState extends State<HardwareCardTile> {
                             flex: 3,
                             child: Stack(
                               children: [
-                                DonutPieChart.setData(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), doubleLayer: false),
+                                donutPieChart
                                 // DonutPieChart.setData(paid: int.parse(perContract.getTotalPaid().replaceAll(",", "")), debt: int.parse(perContract.getTotalDebt().replaceAll(",", "")), payment: true)
                               ]
                             ),
@@ -380,14 +390,16 @@ class _HardwareCardTileState extends State<HardwareCardTile> {
                                     iconItem: "battery.svg",
                                     dimension: 20,
                                     title: "Pin",
-                                    amount: (double.parse(widget.perHardware.perBattery.percentage) * 100.0).toString() + "%"
+                                    bodyColor: Theme.of(context).primaryColor,
+                                    amount: (double.parse(widget.perHardware.perBattery.percentage) * 100.0).toString() + "%",
                                   ),
                                   InfoItem(
                                     color: Color(0xFF707070),
                                     iconItem: "wifi.svg",
                                     dimension: 20,
                                     title: "Kết nối",
-                                    amount: "Off"
+                                    amount: "Off",
+                                    bodyColor: Theme.of(context).primaryColor,
                                   )
                                 ]
                               ), 
@@ -449,7 +461,8 @@ class _AccessoryCardTileState extends State<AccessoryCardTile> {
                         topLeft: Radius.circular(15),
                         topRight: Radius.circular(15)
                       ),
-                      color: Color(0xFF1A9156)
+                      // color: Color(0xFF1A9156)
+                      color: AppColors.blue
                     ),
                     padding: EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                     child:  Row(
@@ -489,7 +502,7 @@ class _AccessoryCardTileState extends State<AccessoryCardTile> {
                   Container(
                     height: 10,
                     width: (MediaQuery.of(context).size.width - 52)*1.0,
-                    color: Color(0xFFFEC84D)
+                    color: Theme.of(context).primaryColor
                   ),
                 ]
               ),

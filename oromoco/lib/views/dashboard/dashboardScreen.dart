@@ -255,13 +255,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     children: [
                       Text(
                         "Xin chào,",
-                        style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.white, fontWeight: FontWeight.normal)
+                        style: Theme.of(context).textTheme.headline5.copyWith(color: Theme.of(context).accentColor, fontWeight: FontWeight.bold)
                       ),
                       SizedBox(height: 20),
                       Text(
                         Constants.username,
                         textAlign: TextAlign.right,
-                        style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.amber)
+                        style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.white)
                       )
                     ]
                   ),

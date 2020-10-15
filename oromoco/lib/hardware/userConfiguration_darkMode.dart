@@ -7,21 +7,22 @@ import 'package:oromoco/bluetooth/utils/utils.dart';
 import 'package:oromoco/hardware/batteryWidget.dart';
 import 'package:oromoco/hardware/hardwareWidget.dart';
 import 'package:oromoco/hardware/signalWidget.dart';
+import 'package:oromoco/utils/theme/theme.dart';
 
-class UserConfigurationScreen extends StatefulWidget {
+class UserConfigurationDarkModeScreen extends StatefulWidget {
   final PerHardware perHardware;
   final BluetoothDevice server;
   
-  UserConfigurationScreen({
+  UserConfigurationDarkModeScreen({
     @required this.perHardware,
     @required this.server
   });
 
   @override
-  _UserConfigurationScreenState createState() => _UserConfigurationScreenState();
+  _UserConfigurationDarkModeScreenState createState() => _UserConfigurationDarkModeScreenState();
 }
 
-class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
+class _UserConfigurationDarkModeScreenState extends State<UserConfigurationDarkModeScreen> {
   PerPackage currentMessageInBuffer = new PerPackage();
 
   bool isConnecting = true;
@@ -31,15 +32,16 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
   bool isConfigured = false;
   Timer periodicBluetooth;
   Timer fakeData;
-
+  
   NumericComboLinePointChart numericComboLinePointChart;
   HorizontalBarLabelCustomChart horizontalBarLabelCustomChart;
   DonutPieChart batteryDonut;
   DonutPieChart angleDonut;
 
-  final keyLineChart = GlobalKey<NumericComboLinePointChartState>();
-  final keyHorizontalBar = GlobalKey<HorizontalBarLabelCustomChartState>();
-  final keyAngleDonut = GlobalKey<DonutPieChartState>();
+  GlobalKey<NumericComboLinePointChartState> _keyLineChart = new GlobalKey();
+  GlobalKey<HorizontalBarLabelCustomChartState> _keyHorizontalBar = new GlobalKey();
+  GlobalKey<DonutPieChartState> _keyBatteryDonut = new GlobalKey();
+  GlobalKey<DonutPieChartState> _keyAngleDonut = new GlobalKey();
 
   /*
   FAKE DATA
@@ -50,15 +52,17 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
 
   @override
   void initState() {
-    super.initState(); 
+    super.initState();
 
-    numericComboLinePointChart = new NumericComboLinePointChart(key: keyLineChart);
-    horizontalBarLabelCustomChart = new HorizontalBarLabelCustomChart(key: keyHorizontalBar);
-    angleDonut = new DonutPieChart(key: keyAngleDonut);
-    // angleDonut = new DonutPieChart(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), 
-    //   left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round());
-    batteryDonut = new DonutPieChart(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), 
-      left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round());
+    _keyBatteryDonut.currentState.setData(
+      used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), 
+      left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round()
+    );   
+
+    numericComboLinePointChart = new NumericComboLinePointChart(key: _keyLineChart);
+    horizontalBarLabelCustomChart = new HorizontalBarLabelCustomChart(key: _keyHorizontalBar);
+    angleDonut = new DonutPieChart(key: _keyAngleDonut);
+    batteryDonut = new DonutPieChart(key: _keyBatteryDonut);
 
     rfSignalPercentage = 85;
     bluetoothSignalPercentage = 85;
@@ -107,18 +111,12 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                 PerPackage oldPackage = currentMessageInBuffer; 
                 currentMessageInBuffer = widget.perHardware.messageBuffer();
                 if(currentMessageInBuffer.initialized && oldPackage.angle != currentMessageInBuffer.angle){
-                  try{
-                    keyAngleDonut.currentState.setData(
-                      used: currentMessageInBuffer.getAngle(), 
-                      left: 180 - currentMessageInBuffer.getAngle()
-                    );
-                  } catch(e){
-                    print(e);
-                  }
-                  setState(() {});
+                  _keyAngleDonut.currentState.setData(
+                    used: currentMessageInBuffer.getAngle(), 
+                    left: 180 - currentMessageInBuffer.getAngle()
+                  ); 
                 }
               } catch(e){
-                print(e);
                 periodicBluetooth.cancel();
               }
             });
@@ -133,12 +131,12 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                 rfSignalPercentage = 85 + randomValue;
                 randomValue = _random.nextInt(10);
                 bluetoothSignalPercentage = 85 + randomValue;
-                keyLineChart.currentState.setData(
+                _keyLineChart.currentState.setData(
                   rfPercentage: rfSignalPercentage, 
                   bluetoothPercentage: bluetoothSignalPercentage
                 );
 
-                keyHorizontalBar.currentState.setData(
+                _keyHorizontalBar.currentState.setData(
                   rfPercentage: rfSignalPercentage,
                   bluetoothPercentage: bluetoothSignalPercentage
                 );
@@ -164,7 +162,7 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 26),
       width: side != "full" ? MediaQuery.of(context).size.width*0.4 : MediaQuery.of(context).size.width,
-      color: backgroundColor != null ? backgroundColor: Colors.white,
+      color: backgroundColor != null ? backgroundColor: Colors.white.withOpacity(0.2),
       height: 42,
       child: Row(
         children: [
@@ -175,7 +173,7 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
               style: Theme.of(context)
                           .textTheme
                           .headline6
-                          .copyWith(fontWeight: FontWeight.normal, color: Colors.black),
+                          .copyWith(fontWeight: FontWeight.normal, color: Colors.white),
             ),
           ),
           Expanded(
@@ -188,7 +186,7 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   style: Theme.of(context)
                       .textTheme
                       .headline6
-                      .copyWith(fontWeight: FontWeight.bold, color: color != null ? color : Colors.black)
+                      .copyWith(fontWeight: FontWeight.bold, color: color != null ? color : Colors.white)
                 ),
               ),
             ),
@@ -203,7 +201,7 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 26),
       width: side != "full" ? MediaQuery.of(context).size.width*0.4 : MediaQuery.of(context).size.width,
-      color: backgroundColor != null ? backgroundColor : Colors.white,
+      color: backgroundColor != null ? backgroundColor : Colors.white.withOpacity(0.2),
       height: 100,
       child: Column(children: <Widget>[
         Expanded(
@@ -216,7 +214,7 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
               style: Theme.of(context)
                           .textTheme
                           .headline6
-                          .copyWith(fontWeight: FontWeight.normal, color: Colors.black),
+                          .copyWith(fontWeight: FontWeight.normal, color: Colors.white),
             ),
           )
         ),
@@ -235,7 +233,7 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   style: Theme.of(context)
                               .textTheme
                               .headline6
-                              .copyWith(fontWeight: FontWeight.bold, color: Colors.black),
+                              .copyWith(fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
               Expanded(
@@ -248,7 +246,7 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                       style: Theme.of(context)
                           .textTheme
                           .headline6
-                          .copyWith(fontWeight: FontWeight.bold, color: color != null ? color : Colors.black)
+                          .copyWith(fontWeight: FontWeight.bold, color: color != null ? color : Colors.white)
                     ),
                   ),
                 ),
@@ -270,7 +268,7 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   style: Theme.of(context)
                               .textTheme
                               .headline6
-                              .copyWith(fontWeight: FontWeight.bold, color: Colors.black),
+                              .copyWith(fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
               Expanded(
@@ -283,7 +281,7 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                       style: Theme.of(context)
                           .textTheme
                           .headline6
-                          .copyWith(fontWeight: FontWeight.bold, color: color != null ? color : Colors.black)
+                          .copyWith(fontWeight: FontWeight.bold, color: color != null ? color : Colors.white)
                     ),
                   ),
                 ),
@@ -346,8 +344,21 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
   @override
   Widget build(BuildContext context) {
     return isConfigured && currentMessageInBuffer.initialized ? Container(
+      decoration: BoxDecoration(
+        gradient: new LinearGradient(
+          colors: [
+            AppColors.blue,
+            Color(0xFF5C5CFF)
+          ],
+          begin: const FractionalOffset(0.0, 0.0),
+          end: const FractionalOffset(1.0, 0.0),
+          stops: [0.0, 1.0],
+          tileMode: TileMode.clamp
+        )
+      ),
       child: Scaffold(
-        backgroundColor: Color(0xFFF5F5F5),
+        // backgroundColor: Color(0xFFF5F5F5),
+        backgroundColor: Colors.transparent, 
         appBar: PreferredSize(
           preferredSize: Size.fromHeight(60.0) + Offset(
             0.0, 
@@ -473,8 +484,8 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.symmetric(horizontal: 26, vertical: 10),
                   child: Text(
-                    "Thông số hệ thống",
-                    style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.black),
+                    "THÔNG SỐ HỆ THỐNG",
+                    style: Theme.of(context).textTheme.headline5.copyWith(color: Color(0xFFF58C14)),
                     textAlign: TextAlign.left,
                   )
                 ),
@@ -483,30 +494,30 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.symmetric(horizontal: 26),
                   child: Text(
-                    "Thông tin sản phẩm",
+                    "THÔNG TIN SẢN PHẨM",
                     style: Theme.of(context).textTheme.bodyText2.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black),
+                        color: Color(0xFFF58C14)),
                   ),
                 ),
                 SizedBox(height: 12),
                 Container(
-                  child: textBuilder("full", "Tên sản phẩm", widget.perHardware.name, color: Colors.grey, backgroundColor: Colors.transparent)
+                  child: textBuilder("full", "Tên sản phẩm", widget.perHardware.name, color: Colors.grey)
                 ),
                 SizedBox(height: 12),
                 Container(
                   child: Column(
                     children: [
                       SizedBox(height: 12),
-                      textBuilder("full", "Mã sản phẩm", widget.perHardware.hadrwareID, color: Colors.grey, backgroundColor: Colors.transparent),
+                      textBuilder("full", "Mã sản phẩm", widget.perHardware.hadrwareID, color: Colors.grey),
                       SizedBox(height: 2),
-                      textBuilder("full", "Phiên bản", widget.perHardware.version, color: Colors.grey, backgroundColor: Colors.transparent),
+                      textBuilder("full", "Phiên bản", widget.perHardware.version, color: Colors.grey),
                       SizedBox(height: 2),
-                      textBuilder("full", "Địa chỉ RF", widget.perHardware.address, color: Colors.grey, backgroundColor: Colors.transparent),
+                      textBuilder("full", "Địa chỉ RF", widget.perHardware.address, color: Colors.grey),
                       SizedBox(height: 2),
-                      textBuilder("full", "Hỗ trợ Bluetooth", widget.perHardware.bluetoothSupport ? "Có" : "Không", color: Colors.grey, backgroundColor: Colors.transparent),
+                      textBuilder("full", "Hỗ trợ Bluetooth", widget.perHardware.bluetoothSupport ? "Có" : "Không", color: Colors.grey),
                       widget.perHardware.bluetoothSupport ? SizedBox(height: 2):Container(),
-                      widget.perHardware.bluetoothSupport ? doubleTextBuilder("full", "Mã Bluetooth", widget.perHardware.bluetoothID, "Trạng thái", widget.perHardware.isConnectedTo() ? "Kết nối" : "Ngắt kết nối", "Thông tin Bluetooth", color: Colors.grey, backgroundColor: Colors.transparent):Container(),
+                      widget.perHardware.bluetoothSupport ? doubleTextBuilder("full", "Mã Bluetooth", widget.perHardware.bluetoothID, "Trạng thái", widget.perHardware.isConnectedTo() ? "Kết nối" : "Ngắt kết nối", "Thông tin Bluetooth", color: Colors.grey):Container(),
                       SizedBox(height: 24),
                     ]
                   ),
@@ -516,10 +527,10 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.symmetric(horizontal: 26),
                   child: Text(
-                    "Hiệu chỉnh hệ thống",
+                    "HIỆU CHỈNH HỆ THỐNG",
                     style: Theme.of(context).textTheme.bodyText2.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black),
+                        color: Color(0xFFF58C14)),
                   ),
                 ),
                 Container(
@@ -554,8 +565,8 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.symmetric(horizontal: 26, vertical: 10),
                   child: Text(
-                    "Góc hiện tại",
-                    style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.black),
+                    "GÓC HIỆN TẠI",
+                    style: Theme.of(context).textTheme.headline5.copyWith(color: Color(0xFFF58C14)),
                     textAlign: TextAlign.left,
                   )
                 ),
@@ -563,13 +574,13 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   child: Stack(
                     children: <Widget>[
                       Container(
-                        color: Colors.white, 
+                        color: Colors.white.withOpacity(0.2), 
                         height: 200,
                         width: MediaQuery.of(context).size.width,
                         padding: EdgeInsets.symmetric(
                           horizontal: 100
                         ),
-                        child: angleDonut
+                        child: angleDonut,
                       ),
                       Positioned(
                         top: 85,
@@ -594,8 +605,8 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.symmetric(horizontal: 26),
                   child: Text(
-                    "Biểu đồ pin",
-                    style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.black),
+                    "BIỂU ĐỒ PIN",
+                    style: Theme.of(context).textTheme.headline5.copyWith(color: Color(0xFFF58C14)),
                     textAlign: TextAlign.left,
                   )
                 ),
@@ -606,17 +617,17 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: Text(
-                      "Pin hiện tại",
+                      "PIN HIỆN TẠI",
                       style: Theme.of(context).textTheme.bodyText2.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black),                    
+                          color: Color(0xFFF58C14)),                    
                       textAlign: TextAlign.left,
                     ),
                   )
                 ),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 26),
-                  color: Colors.white, 
+                  color: Colors.white.withOpacity(0.2), 
                   height: 200,
                   child: Row(
                     children: <Widget>[
@@ -648,7 +659,7 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                             children: <Widget>[
                               Text(
                                 "Định mức pin: ",
-                                style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black, fontWeight: FontWeight.normal),
+                                style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white, fontWeight: FontWeight.normal),
                               ),
                               Text(
                                 widget.perHardware.perBattery.capacity + "mAh",
@@ -658,7 +669,7 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                               SizedBox(height: 10),
                               Text(
                                 "Chủng pin: ",
-                                style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black, fontWeight: FontWeight.normal),
+                                style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white, fontWeight: FontWeight.normal),
                               ),
                               Text(
                                 widget.perHardware.perBattery.type,
@@ -679,16 +690,16 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: Text(
-                      "Dung lượng pin",
+                      "DUNG LƯỢNG PIN",
                       style: Theme.of(context).textTheme.bodyText2.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black),
+                          color: Color(0xFFF58C14)),
                       textAlign: TextAlign.left,
                     ),
                   )
                 ),
                 Container(
-                  color: Colors.white,
+                  color: Colors.white.withOpacity(0.2),
                   height: 200,
                   width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.symmetric(horizontal: 26, vertical: 10),
@@ -714,8 +725,8 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.symmetric(horizontal: 26),
                   child: Text(
-                    "Biểu đồ vô tuyến",
-                    style: Theme.of(context).textTheme.headline5.copyWith(color: Colors.black),
+                    "BIỂU ĐỒ VÔ TUYẾN",
+                    style: Theme.of(context).textTheme.headline5.copyWith(color: Color(0xFFF58C14)),
                     textAlign: TextAlign.left,
                   )
                 ),
@@ -726,16 +737,16 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: Text(
-                      "Kết nối",
+                      "KẾT NỐI",
                       style: Theme.of(context).textTheme.bodyText2.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black),                    
+                          color: Color(0xFFF58C14)),                    
                       textAlign: TextAlign.left,
                     ),
                   )
                 ),
                 Container(
-                  color: Colors.white,
+                  color: Colors.white.withOpacity(0.2),
                   height: 200,
                   width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.symmetric(horizontal: 26, vertical: 10),
@@ -752,16 +763,16 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   child: Container(
                     padding: EdgeInsets.symmetric(vertical: 10),
                     child: Text(
-                      "Lịch sử kết nối",
+                      "LỊCH SỬ KẾT NỐI",
                       style: Theme.of(context).textTheme.bodyText2.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black),                    
+                          color: Color(0xFFF58C14)),                    
                       textAlign: TextAlign.left,
                     ),
                   )
                 ),
                 Container(
-                  color: Colors.white,
+                  color: Colors.white.withOpacity(0.2),
                   height: 200,
                   width: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.symmetric(horizontal: 26, vertical: 10),

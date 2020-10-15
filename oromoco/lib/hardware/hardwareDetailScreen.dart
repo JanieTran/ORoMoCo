@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:oromoco/hardware/userConfiguration.dart';
 import 'package:oromoco/helper/constants.dart';
 import 'package:oromoco/services/database.dart';
+import 'package:oromoco/utils/theme/theme.dart';
 
 class HardwareDetailScreen extends StatefulWidget {
   PerHardware perHardware;
@@ -24,6 +25,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
   Stream hardwareLogStream;
   int messageLimit = 20;
   ScrollController _scrollController = new ScrollController();
+  DonutPieChart donutPieChart;
 
   Widget logTerminal(){
     return Container(
@@ -59,6 +61,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
   @override
   void initState() {
     super.initState();
+    donutPieChart = new DonutPieChart(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round());
     DatabaseMethods().getHardwareLog(Constants.firebaseUID, widget.perHardware.logDocumentID, messageLimit).then((value) {
       setState(() {
         hardwareLogStream = value;
@@ -296,7 +299,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
                       flex: 2,
                       child: Stack(
                         children: [
-                          DonutPieChart.setData(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), doubleLayer: false),
+                          donutPieChart,
                           Positioned(
                             top: 85,
                             child: Container(
@@ -304,7 +307,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
                               child: Text(
                                 (double.parse(widget.perHardware.perBattery.percentage) * 100).round().toString() + "%",
                                 textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.headline5.copyWith(color: Color(0xFF1A9156))
+                                style: Theme.of(context).textTheme.headline5.copyWith(color: Theme.of(context).primaryColor)
                               ),
                             ),
                           )
@@ -325,7 +328,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
                             Text(
                               widget.perHardware.perBattery.capacity + "mAh",
                               textAlign: TextAlign.right,                           
-                              style: Theme.of(context).textTheme.headline5.copyWith(color: Color(0xFF1A9156))
+                              style: Theme.of(context).textTheme.headline5.copyWith(color: Theme.of(context).primaryColor)
                             ),
                             SizedBox(height: 10),
                             Text(
@@ -335,7 +338,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
                             Text(
                               widget.perHardware.perBattery.type,
                               textAlign: TextAlign.right,                           
-                              style: Theme.of(context).textTheme.headline5.copyWith(color: Color(0xFF1A9156))
+                              style: Theme.of(context).textTheme.headline5.copyWith(color: Theme.of(context).primaryColor)
                             )
                           ],
                         ),
@@ -436,7 +439,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
                                 Flexible(
                                   flex: 1,
                                   child: Text(
-                                    widget.perHardware.isConnectedTo() ? "bật" : "tắt",
+                                    widget.perHardware.isConnectedTo() ? "Bật" : "Tắt",
                                     textAlign: TextAlign.right,
                                     style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.white)
                                   )
@@ -527,7 +530,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
                         style: Theme.of(context)
                             .textTheme
                             .headline6.copyWith(fontWeight: FontWeight.bold, 
-                            color: Color(0xFF09764C)),
+                            color: Theme.of(context).primaryColor),
                       ),
                       onPressed: () async {
                         final BluetoothDevice selectedDevice = await Navigator.of(context).push(
@@ -569,7 +572,7 @@ class _HardwareDetailScreenState extends State<HardwareDetailScreen> {
                         'Gỡ lỗi',
                         style: Theme.of(context)
                             .textTheme
-                            .headline6.copyWith(fontWeight: FontWeight.bold, color: Color(0xFF09764C)),
+                            .headline6.copyWith(fontWeight: FontWeight.bold, color: AppColors.grey),
                       ),
                       onPressed: () async {
                         if(widget.perHardware.isConnectedTo()){
