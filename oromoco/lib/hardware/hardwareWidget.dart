@@ -182,8 +182,9 @@ class PerHardware{
 class HardwareCardTile extends StatefulWidget {
   @required final PerHardware perHardware;
   bool homePage;
+  String imagePath;
 
-  HardwareCardTile(this.perHardware, {this.homePage = false, Key key}):super(key: key);
+  HardwareCardTile(this.perHardware, {this.imagePath, this.homePage = false, Key key}):super(key: key);
 
   @override
   _HardwareCardTileState createState() => _HardwareCardTileState();
@@ -211,6 +212,12 @@ class _HardwareCardTileState extends State<HardwareCardTile> {
         childInit.cancel();
       }
     });
+
+    if(widget.perHardware.hadrwareID.contains("HM")){
+      widget.imagePath = "assets/images/layout/hand_module.png";
+    } else if(widget.perHardware.hadrwareID.contains("S")){
+      widget.imagePath = "assets/images/layout/sensor_box.png";
+    }
   }
 
   @override
@@ -361,67 +368,93 @@ class _HardwareCardTileState extends State<HardwareCardTile> {
                     ),
                     color: widget.homePage ? Color(0xFFF5F5F5) : Colors.white
                   ),
-                padding: EdgeInsets.symmetric(horizontal: 18, vertical: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Stack(
                   children: <Widget>[
                     Container(
-                      child: RichText(
-                        text: TextSpan(
-                          style: Theme.of(context).textTheme.headline6.copyWith(color: Color(0xFF707070), fontWeight: FontWeight.normal),
-                          children: [
-                            TextSpan(
-                              text: "Trạng thái: "
-                            ),
-                            TextSpan(
-                              text: widget.perHardware.isConnectedTo() ? "Bật" : "Tắt",
-                              style: Theme.of(context).textTheme.headline5.copyWith(color: widget.perHardware.isConnectedTo() ? Color(0xFF1A9156) : Colors.red.withOpacity(0.8))
-                            )
-                          ]
-                        )
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                            fit: BoxFit.cover, image: AssetImage(widget.imagePath != null && widget.imagePath != "" ? widget.imagePath : "assets/images/layout/random_background.png")),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(15),
+                          bottomRight: Radius.circular(15),
+                        ),
                       ),
                     ),
-                    Expanded(
-                      child: Row(
-                        children: <Widget>[
-                          Flexible(
-                            flex: 3,
-                            child: Stack(
-                              children: [
-                                donutPieChart
-                                // DonutPieChart.setData(paid: int.parse(perContract.getTotalPaid().replaceAll(",", "")), debt: int.parse(perContract.getTotalDebt().replaceAll(",", "")), payment: true)
-                              ]
-                            ),
+                    Container(
+                      color: Colors.white.withOpacity(0.8)
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          padding: EdgeInsets.only(
+                            left: 18,
+                            right: 18, 
+                            top: 20
                           ),
-                          Flexible(
-                            flex: 2,
-                            child: Container(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  InfoItem(
-                                    color: Color(0xFF707070),
-                                    iconItem: "battery.svg",
-                                    dimension: 20,
-                                    title: "Pin",
-                                    bodyColor: Theme.of(context).primaryColor,
-                                    amount: (double.parse(widget.perHardware.perBattery.percentage) * 100.0).toString() + "%",
-                                  ),
-                                  InfoItem(
-                                    color: Color(0xFF707070),
-                                    iconItem: "wifi.svg",
-                                    dimension: 20,
-                                    title: "Kết nối",
-                                    amount: "Off",
-                                    bodyColor: Theme.of(context).primaryColor,
-                                  )
-                                ]
-                              ), 
+                          child: RichText(
+                            text: TextSpan(
+                              style: Theme.of(context).textTheme.headline6.copyWith(color: Color(0xFF707070), fontWeight: FontWeight.normal),
+                              children: [
+                                TextSpan(
+                                  text: "Trạng thái: "
+                                ),
+                                TextSpan(
+                                  text: widget.perHardware.isConnectedTo() ? "Bật" : "Tắt",
+                                  style: Theme.of(context).textTheme.headline5.copyWith(color: widget.perHardware.isConnectedTo() ? Color(0xFF1A9156) : Colors.red.withOpacity(0.8))
+                                )
+                              ]
                             )
-                          )
-                        ],
-                      ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Row(
+                            children: <Widget>[
+                              Flexible(
+                                flex: 3,
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                    left: 18,
+                                    bottom: 20
+                                  ),
+                                  child: donutPieChart
+                                )
+                              ),
+                              Flexible(
+                                flex: 2,
+                                child: Container(
+                                  padding: EdgeInsets.only(
+                                    right: 18,
+                                    bottom: 20
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      InfoItem(
+                                        color: Color(0xFF707070),
+                                        iconItem: "battery.svg",
+                                        dimension: 20,
+                                        title: "Pin",
+                                        bodyColor: Theme.of(context).primaryColor,
+                                        amount: (double.parse(widget.perHardware.perBattery.percentage) * 100.0).toString() + "%",
+                                      ),
+                                      InfoItem(
+                                        color: Color(0xFF707070),
+                                        iconItem: "wifi.svg",
+                                        dimension: 20,
+                                        title: "Kết nối",
+                                        amount: "Off",
+                                        bodyColor: Theme.of(context).primaryColor,
+                                      )
+                                    ]
+                                  ), 
+                                )
+                              )
+                            ],
+                          ),
+                        )
+                      ],
                     )
                   ],
                 )
@@ -446,6 +479,14 @@ class AccessoryCardTile extends StatefulWidget {
 }
 
 class _AccessoryCardTileState extends State<AccessoryCardTile> {
+  @override
+  void initState() {
+    super.initState();
+    if(widget.perHardware.hadrwareID.contains("CD")){
+      widget.imagePath = "assets/images/layout/charging_dock.png";
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -535,7 +576,7 @@ class _AccessoryCardTileState extends State<AccessoryCardTile> {
                     Container(
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                            fit: BoxFit.cover, image: AssetImage(widget.imagePath != null && widget.imagePath != "" ? widget.imagePath : "assets/images/layout/charging_dock.png")),
+                            fit: BoxFit.cover, image: AssetImage(widget.imagePath != null && widget.imagePath != "" ? widget.imagePath : "assets/images/layout/random_background.png")),
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(15),
                           bottomRight: Radius.circular(15),

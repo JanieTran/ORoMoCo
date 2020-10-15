@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:oromoco/helper/constants.dart';
+import 'package:oromoco/utils/theme/theme.dart';
 
 class UserMainInfoCard extends StatelessWidget {
   const UserMainInfoCard({Key key}) : super(key: key);
@@ -21,7 +22,7 @@ class UserMainInfoCard extends StatelessWidget {
               right: 0,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Colors.white, 
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20),

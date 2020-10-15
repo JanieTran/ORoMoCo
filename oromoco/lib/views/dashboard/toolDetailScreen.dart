@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:oromoco/hardware/batteryWidget.dart';
 import 'package:oromoco/hardware/hardwareWidget.dart';
 import 'package:oromoco/helper/constants.dart';
 
@@ -9,33 +8,6 @@ class ToolDetailScreen extends StatefulWidget {
 }
 
 class _ToolDetailScreenState extends State<ToolDetailScreen> {
-  //   List<PerHardware> _hardwareList = [
-  //   new PerHardware(
-  //     "Vulcan's Mk10",
-  //     new PerBattery(
-  //       id: "1001",
-  //       type: "LiPo",
-  //       capacity: "2400mAh"
-  //     ),
-  //   ),
-  //    new PerHardware(
-  //     "Vulcan's sensor",
-  //     new PerBattery(
-  //       id: "1002",
-  //       type: "LiPo",
-  //       capacity: "2400mAh"
-  //     ),
-  //   ),
-  //    new PerHardware(
-  //     "Insole",
-  //     new PerBattery(
-  //       id: "1003",
-  //       type: "LiPo",
-  //       capacity: "2400mAh"
-  //     ),
-  //   )
-  // ];
-
   List<PerHardware> _hardwareList = Constants.hardwareList;
   
   @override
@@ -113,13 +85,13 @@ class _ToolDetailScreenState extends State<ToolDetailScreen> {
 
 Widget _buildContractCardList(List<PerHardware> _hardwareList) {
   return ListView(
-      children: _hardwareList
-        .map((hardware) => Container(
-          child: new HardwareCardTile(
-            hardware,
-            homePage: false,
-            key: UniqueKey()),
-        ))
-        .toList(),
+    children: _hardwareList
+      .map((hardware) => Container(
+        child: new HardwareCardTile(
+          hardware,
+          homePage: false,
+          key: UniqueKey()),
+      ))
+      .toList(),
   );
 }

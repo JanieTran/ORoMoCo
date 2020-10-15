@@ -49,6 +49,9 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
   int rfSignalPercentage;
   int bluetoothSignalPercentage;
   final _random = new Random();
+  int red = 0;
+  int green = 0;
+  int blue = 0;
 
   @override
   void initState() {
@@ -57,8 +60,6 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
     numericComboLinePointChart = new NumericComboLinePointChart(key: _keyLineChart);
     horizontalBarLabelCustomChart = new HorizontalBarLabelCustomChart(key: _keyHorizontalBar);
     angleDonut = new DonutPieChart(key: _keyAngleDonut);
-    // angleDonut = new DonutPieChart(used: 100 - (double.parse(widget.perHardware.perBattery.percentage) * 100).round(), 
-    //   left: (double.parse(widget.perHardware.perBattery.percentage) * 100).round());
     batteryDonut = new DonutPieChart(key: _keyBatteryDonut);
     childInit = Timer.periodic(Duration(milliseconds: 100), (Timer t) {
       try{
@@ -311,12 +312,12 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
 
   Future<void> onChooseColor(){
     // create some values
-    Color pickerColor = Color(0xff443a49);
-    Color currentColor = Color(0xff443a49);
+    Color pickerColor = Color.fromRGBO(red, green, blue, 1.0);
+
 
     // ValueChanged<Color> callback
     void changeColor(Color color) {
-      setState(() => pickerColor = color);
+      pickerColor = color;
     }
 
     // raise the [showDialog] widget
@@ -330,8 +331,7 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
         content: SingleChildScrollView(
           child: ColorPicker(
             pickerColor: pickerColor,
-            onColorChanged: null,
-            // onColorChanged: changeColor,
+            onColorChanged: changeColor,
             showLabel: true,
             pickerAreaHeightPercent: 0.8,
           ),
@@ -340,7 +340,11 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
           FlatButton(
             child: Text('Chọn', style: Theme.of(context).textTheme.headline6.copyWith(color: Colors.black)),
             onPressed: () {
-              setState(() => currentColor = pickerColor);
+              setState((){
+                red = pickerColor.red;
+                green = pickerColor.green;
+                blue = pickerColor.blue;
+              });
               Navigator.of(context).pop();
             },
           ),
@@ -545,16 +549,44 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                       SizedBox(height: 24),
                       GestureDetector(
                         onTap: () => onChooseColor(),
-                        child: Container(
-                          child: Column(
-                            children: <Widget>[
-                              textBuilder("full", "Sắc đỏ", currentMessageInBuffer.red.toString()),
-                              SizedBox(height: 2),
-                              textBuilder("full", "Sắc xanh lá", currentMessageInBuffer.green.toString()),
-                              SizedBox(height: 2),
-                              textBuilder("full", "Sắc xanh dương", currentMessageInBuffer.blue.toString()),
-                            ],
-                          ),
+                        child: Stack(
+                          children: <Widget>[
+                            Container(
+                              child: Column(
+                                children: <Widget>[
+                                  textBuilder("full", "Sắc đỏ", red.toString()),
+                                  SizedBox(height: 2),
+                                  textBuilder("full", "Sắc xanh lá", green.toString()),
+                                  SizedBox(height: 2),
+                                  textBuilder("full", "Sắc xanh dương", blue.toString()),
+                                ],
+                              ),
+                            ),
+                            Positioned(
+                              top: 25,
+                              right: 90, 
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color.fromRGBO(red, green, blue, 0.2),
+                                  borderRadius: BorderRadius.circular(40)
+                                ),
+                                height: 80, 
+                                width: 80,
+                              ),
+                            ),
+                            Positioned(
+                              top: 35,
+                              right: 100, 
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color.fromRGBO(red, green, blue, 1.0),
+                                  borderRadius: BorderRadius.circular(30)
+                                ),
+                                height: 60, 
+                                width: 60,
+                              ),
+                            ),
+                          ],
                         )
                       ),
                       SizedBox(height: 24),

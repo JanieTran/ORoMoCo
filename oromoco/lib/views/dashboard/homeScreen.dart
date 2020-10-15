@@ -13,6 +13,12 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<PerHardware> _hardwareList = Constants.hardwareList;
+  List<PerHardware> _accessoryList = [
+    PerHardware(name: "Đế sạc thông minh", perBattery: new PerBattery(), hadrwareID: "CD001", bluetoothID: "", lastSyncDate: DateTime.now().millisecondsSinceEpoch.toString(), address: "", bluetoothSupport: false, version: "Mk2.5", logDocumentID: ""),
+    PerHardware(name: "Dụng cụ hỗ trợ", perBattery: new PerBattery(), hadrwareID: "A001", bluetoothID: "", lastSyncDate: DateTime.now().millisecondsSinceEpoch.toString(), address: "", bluetoothSupport: false, version: "Mk2.5", logDocumentID: ""),
+    PerHardware(name: "Dụng cụ hỗ trợ", perBattery: new PerBattery(), hadrwareID: "A001", bluetoothID: "", lastSyncDate: DateTime.now().millisecondsSinceEpoch.toString(), address: "", bluetoothSupport: false, version: "Mk2.5", logDocumentID: ""),
+    PerHardware(name: "Dụng cụ hỗ trợ", perBattery: new PerBattery(), hadrwareID: "A001", bluetoothID: "", lastSyncDate: DateTime.now().millisecondsSinceEpoch.toString(), address: "", bluetoothSupport: false, version: "Mk2.5", logDocumentID: "")
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -130,12 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
       SizedBox(height: 40),
       _horizontalListView(
         "Phụ kiện của tôi",
-        [
-          new PerHardware(name: "Đế sạc thông minh", perBattery: new PerBattery(), hadrwareID: "A001", bluetoothID: "", lastSyncDate: DateTime.now().millisecondsSinceEpoch.toString(), address: "", bluetoothSupport: false, version: "Mk2.5", logDocumentID: ""),
-          new PerHardware(name: "Dụng cụ hỗ trợ", perBattery: new PerBattery(), hadrwareID: "A001", bluetoothID: "", lastSyncDate: DateTime.now().millisecondsSinceEpoch.toString(), address: "", bluetoothSupport: false, version: "Mk2.5", logDocumentID: ""),
-          new PerHardware(name: "Dụng cụ hỗ trợ", perBattery: new PerBattery(), hadrwareID: "A001", bluetoothID: "", lastSyncDate: DateTime.now().millisecondsSinceEpoch.toString(), address: "", bluetoothSupport: false, version: "Mk2.5", logDocumentID: ""),
-          new PerHardware(name: "Dụng cụ hỗ trợ", perBattery: new PerBattery(), hadrwareID: "A001", bluetoothID: "", lastSyncDate: DateTime.now().millisecondsSinceEpoch.toString(), address: "", bluetoothSupport: false, version: "Mk2.5", logDocumentID: "")
-        ],
+        _accessoryList,
         "tool-list-on-board.svg", 
         type: "accessory"),
       SizedBox(height: 40),
