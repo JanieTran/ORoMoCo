@@ -43,6 +43,8 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
   final _keyAngleDonut = GlobalKey<DonutPieChartState>();
   final _keyBatteryDonut = GlobalKey<DonutPieChartState>();
 
+  String movement_pattern = "assets/images/layout/movement_1.png";
+
   /*
   FAKE DATA
   */
@@ -129,7 +131,12 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   } catch(e){
                     print(e);
                   }
-                  setState(() {});
+
+                  int index = ((currentMessageInBuffer.getAngle() - currentMessageInBuffer.lowerLimit)/((currentMessageInBuffer.upperLimit - currentMessageInBuffer.lowerLimit)*0.25)).round() + 1;
+
+                  setState(() {
+                    movement_pattern = "assets/images/layout/movement_" + index.toString() + ".png";                    
+                  });
                 }
               } catch(e){
                 print(e);
@@ -605,31 +612,39 @@ class _UserConfigurationScreenState extends State<UserConfigurationScreen> {
                   )
                 ),
                 Container(
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.white, 
                   child: Stack(
                     children: <Widget>[
                       Container(
+                        margin: EdgeInsets.symmetric(horizontal: 40),
                         color: Colors.white, 
                         height: 200,
-                        width: MediaQuery.of(context).size.width,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 100
-                        ),
+                        width: 200,
                         child: angleDonut
                       ),
                       Positioned(
                         top: 85,
+                        left: 0,
                         child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 40),
                           height: 200,
-                          width: MediaQuery.of(context).size.width,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 74
-                          ),
+                          width: 200,
                           child: Text(
                             currentMessageInBuffer.getAngle().toString(),
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headline5.copyWith(color: Theme.of(context).primaryColor)
                           ),
                         ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 40),
+                          height: 200,
+                          child: Image.asset(movement_pattern)
+                        )
                       )
                     ],
                   ),
